@@ -1,15 +1,19 @@
-import { useCallback } from "react";
-import { Box, ButtonGroup, Card, CardBody, Th, Tr, useToast } from "@chakra-ui/react";
+import { useCallback, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import {
+  ButtonGroup, Card, CardBody, FormControl, FormErrorMessage, FormLabel, Input, Switch, Th, Tr, useDisclosure, useToast,
+} from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { get } from "lodash";
 
-import { Breadcrumb, WritableButton, WritableSwitch, WritableTip } from "@/components/chakra";
+import { Breadcrumb, Container, WritableButton, WritableSwitch, WritableTip } from "@/components/chakra";
+import { CreateModal } from "@/components/modal";
 import { DataTable, TableMeta } from "@/components/table";
 import { fetchApi } from "@/fetchers/api";
 import { useStore } from "@/store";
 import { ApiResponse } from "@/types/api";
 import { UserInfo } from "@/types/user";
-import { desc2Hump } from "@/utils";
+import { desc2Hump, isDefined } from "@/utils";
 
 const User = () => {
   const config = useStore((state) => state.config);
@@ -20,18 +24,41 @@ const User = () => {
   const stopLoading = useStore((state) => (name: string) => state.stopLoading(`user.${desc2Hump(name)}`));
   const isLoading = useCallback((name: string) => get(loadings, `user.${desc2Hump(name)}`, false), [loadings]);
 
+  const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm<Required<UserInfo>>({
+    defaultValues: {
+      username: "",
+      passcode: "",
+      enabled: true,
+    },
+  });
+
   const toast = useToast();
 
   const action = async (
     method: string,
-    description: string,
     {
+      description,
+      loadingKey,
+      successCallback,
       showSuccessMsg = true,
       showErrorMsg = true,
       data = {},
-    }: { showSuccessMsg?: boolean; showErrorMsg?: boolean; data?: object } = {},
+    }: {
+      description: string;
+      loadingKey?: string;
+      successCallback?: () => void;
+      showSuccessMsg?: boolean;
+      showErrorMsg?: boolean;
+      data?: object;
+    },
   ) => {
-    const key = desc2Hump(description);
+    const key = loadingKey ?? desc2Hump(description);
     startLoading(key);
 
     await fetchApi
@@ -45,6 +72,8 @@ const User = () => {
             position: "top",
             duration: 2000,
           });
+
+        if (successCallback) successCallback();
 
         getConfig();
       })
@@ -87,7 +116,8 @@ const User = () => {
               isChecked={enabled}
               isDisabled={isLoading(description)}
               onChange={() =>
-                action("editUsers", description, {
+                action("editUsers", {
+                  description,
                   data: { users: { [username]: { ...userinfo, enabled: !enabled } } },
                 })
               }
@@ -112,9 +142,9 @@ const User = () => {
               <WritableButton
                 size="xs"
                 colorScheme="red"
-                isDisabled={isLoading(description)}
                 isLoading={isLoading(description)}
-                onClick={() => action("editUsers", description, { data: { users: { [username]: null } } })}
+                isDisabled={isLoading(description)}
+                onClick={() => action("editUsers", { description, data: { users: { [username]: null } } })}
               >
                 Delete
               </WritableButton>
@@ -137,9 +167,9 @@ const User = () => {
             <WritableButton
               size="xs"
               variant="black-ghost"
-              isDisabled={isLoading("Enable All Users")}
               isLoading={isLoading("Enable All Users")}
-              onClick={() => action("enableAll", "Enable All Users")}
+              isDisabled={isLoading("Enable All Users")}
+              onClick={() => action("enableAll", { description: "Enable All Users" })}
             >
               Enable All
             </WritableButton>
@@ -148,9 +178,9 @@ const User = () => {
             <WritableButton
               size="xs"
               variant="black-ghost"
-              isDisabled={isLoading("Disable All Users")}
               isLoading={isLoading("Disable All Users")}
-              onClick={() => action("disableAll", "Disable All Users")}
+              isDisabled={isLoading("Disable All Users")}
+              onClick={() => action("disableAll", { description: "Disable All Users" })}
             >
               Disable All
             </WritableButton>
@@ -165,10 +195,58 @@ const User = () => {
     <>
       <Breadcrumb title="User" />
 
-      <Box p={6}>
+      <CreateModal
+        title="Add New User"
+        isOpen={isModalOpen}
+        onClose={() => {
+          closeModal();
+          reset();
+        }}
+        isLoading={isLoading("Add New User")}
+        onSubmit={handleSubmit(({ username, passcode, enabled }) =>
+          action("editUsers", {
+            description: `Add New User ${username}`,
+            loadingKey: "Add New User",
+            data: { users: { [username]: { passcode, enabled } } },
+            successCallback: () => {
+              reset();
+              closeModal();
+            },
+          }),
+        )}
+      >
+        <FormControl isInvalid={isDefined(errors.username)}>
+          <FormLabel>Username</FormLabel>
+          <Input
+            type="text"
+            {...register("username", {
+              required: "Username is required",
+            })}
+          />
+          {errors.username && <FormErrorMessage>{errors.username.message}</FormErrorMessage>}
+        </FormControl>
+        <FormControl isInvalid={isDefined(errors.passcode)}>
+          <FormLabel>Passcode</FormLabel>
+          <Input
+            type="password"
+            {...register("passcode", {
+              required: "Passcode is required",
+            })}
+          />
+          {errors.passcode && <FormErrorMessage>{errors.passcode.message}</FormErrorMessage>}
+        </FormControl>
+        <FormControl>
+          <FormLabel>Enabled</FormLabel>
+          <Switch size="sm" {...register("enabled")} />
+        </FormControl>
+      </CreateModal>
+
+      <Container>
         <ButtonGroup mb={4}>
           <WritableTip description="Add User">
-            <WritableButton variant="black-ghost">Add User</WritableButton>
+            <WritableButton variant="black-ghost" onClick={openModal}>
+              Add User
+            </WritableButton>
           </WritableTip>
           <WritableTip
             label={!config.seApiToken ? "Surge Enterprise Api Token not set" : null}
@@ -176,9 +254,9 @@ const User = () => {
           >
             <WritableButton
               variant="black-ghost"
-              isDisabled={!config.seApiToken || isLoading("Sync Users")}
               isLoading={isLoading("Sync Users")}
-              onClick={() => action("syncUsers", "Sync Users")}
+              isDisabled={!config.seApiToken || isLoading("Sync Users")}
+              onClick={() => action("syncUsers", { description: "Sync Users" })}
             >
               Sync from Surge Enterprise
             </WritableButton>
@@ -194,7 +272,7 @@ const User = () => {
             />
           </CardBody>
         </Card>
-      </Box>
+      </Container>
     </>
   );
 };

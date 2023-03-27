@@ -14,7 +14,7 @@ const Info = styled(Flex)`
 `;
 
 export const Footer = (props: FlexProps) => (
-  <Info as="footer" py={2} justifyContent="center" alignItems="center" color="gray.400" fontSize="sm" {...props}>
+  <Info as="footer" h={8} justifyContent="center" alignItems="center" color="gray.400" fontSize="sm" {...props}>
     <Text>{pkg.version}</Text>
     <Link href={pkg.homepage} display="flex" alignItems="center" textDecoration="underline" isExternal>
       GitHub

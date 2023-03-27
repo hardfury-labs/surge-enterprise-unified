@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Box, Card, CardBody, Grid, GridItem, Stat, StatLabel, StatNumber, Text } from "@chakra-ui/react";
+import { Card, CardBody, Grid, GridItem, Stat, StatLabel, StatNumber, Text } from "@chakra-ui/react";
 
-import { Breadcrumb, Warning } from "@/components/chakra";
+import { Breadcrumb, Container, Warning } from "@/components/chakra";
 import { useStore } from "@/store";
 import { hump2Desc } from "@/utils";
 
@@ -28,7 +28,7 @@ const Index = () => {
     <>
       <Breadcrumb title="Summary" />
 
-      <Box p={6}>
+      <Container>
         {config.warnings.length > 0 && (
           <Warning mb={4}>
             {config.warnings.map((text, index) => (
@@ -52,7 +52,7 @@ const Index = () => {
               </GridItem>
             ))}
         </Grid>
-      </Box>
+      </Container>
     </>
   );
 };

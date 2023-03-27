@@ -29,7 +29,7 @@ export const SingleLayout = (props: FlexProps) => (
 // TODO: change to @chakra-ui/next-js?
 // https://dev.to/tungdt90/how-to-use-activelink-in-chakra-ui-with-nextjs-4l9a
 const MenuItem = ({ isActive, ...props }: LinkProps & { isActive?: boolean }) => (
-  <Box pr={2} borderRight={isActive ? "4px solid" : "4px solid transparent"} transition="all 0.2s">
+  <Box pr={3} borderRight={isActive ? "4px solid" : "4px solid transparent"} transition="all 0.2s">
     <Link
       as={NavLink}
       p={2}
@@ -82,7 +82,7 @@ export const DashboardLayout = (props: FlexProps) => (
     </Flex>
 
     <Flex as="main" flexDirection="column" flex="auto">
-      <Flex flexDirection="column" flex="1" overflowY="auto" {...props} />
+      <Flex flexDirection="column" flex="1" {...props} />
 
       <Footer />
     </Flex>

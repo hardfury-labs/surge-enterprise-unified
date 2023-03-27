@@ -3,6 +3,12 @@ import { z } from "zod";
 
 export const sleep = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+export const isDefined = (value: unknown) => {
+  if (value === null || value === undefined) return false;
+
+  return true;
+};
+
 export const formatZodErrors = (errors: z.ZodError) => {
   // TODO add [] for index
   return errors.issues.map((issue) => `${issue.path.join(".")} ${issue.message.toLowerCase()}`);
