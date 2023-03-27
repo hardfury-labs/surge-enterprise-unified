@@ -1,11 +1,33 @@
-import { FiAlertCircle } from "react-icons/fi";
+import { useState } from "react";
+import { FiAlertCircle, FiEye, FiEyeOff } from "react-icons/fi";
 import BeatLoader from "react-spinners/BeatLoader";
 import {
-  Box, BoxProps, Button, ButtonProps, Card, CardBody, CardProps, Flex, Heading, Icon, Switch, SwitchProps,
-  Tooltip as ChakraTooltip, TooltipProps,
+  Box, BoxProps, Button, ButtonProps, Card, CardBody, CardProps, Center, Flex, Heading, Icon, Input, InputGroup,
+  InputGroupProps, InputProps, InputRightElement, Switch, SwitchProps, Tooltip as ChakraTooltip, TooltipProps,
 } from "@chakra-ui/react";
 
 import { useStore } from "@/store";
+
+export const PssswordInput = ({
+  inputGroupProps,
+  inputProps,
+}: {
+  inputGroupProps?: InputGroupProps;
+  inputProps?: InputProps;
+}) => {
+  const [isShowing, setShowing] = useState(false);
+
+  return (
+    <InputGroup {...inputGroupProps}>
+      <Input type={isShowing ? "text" : "password"} {...inputProps} />
+      <InputRightElement>
+        <Center cursor="pointer" color="gray.400" onClick={() => setShowing(!isShowing)}>
+          {isShowing ? <Icon as={FiEye} /> : <Icon as={FiEyeOff} />}
+        </Center>
+      </InputRightElement>
+    </InputGroup>
+  );
+};
 
 export const Breadcrumb = ({ title }: { title: string }) => (
   <Flex as="header" h={16} px={6} alignItems="center" borderBottom="1px solid var(--chakra-colors-gray-200)">

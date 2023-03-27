@@ -1,12 +1,13 @@
-import { useCallback, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useCallback } from "react";
+import { useForm } from "react-hook-form";
 import {
-  ButtonGroup, Card, CardBody, FormControl, FormErrorMessage, FormLabel, Input, Switch, Th, Tr, useDisclosure, useToast,
+  ButtonGroup, Card, CardBody, FormControl, FormErrorMessage, FormLabel, Input, SimpleGrid, Switch, Th, Tr,
+  useDisclosure, useToast,
 } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { get } from "lodash";
 
-import { Breadcrumb, Container, WritableButton, WritableSwitch, WritableTip } from "@/components/chakra";
+import { Breadcrumb, Container, PssswordInput, WritableButton, WritableSwitch, WritableTip } from "@/components/chakra";
 import { CreateModal } from "@/components/modal";
 import { DataTable, TableMeta } from "@/components/table";
 import { fetchApi } from "@/fetchers/api";
@@ -36,6 +37,7 @@ const User = () => {
       passcode: "",
       enabled: true,
     },
+    shouldFocusError: false,
   });
 
   const toast = useToast();
@@ -215,30 +217,33 @@ const User = () => {
           }),
         )}
       >
-        <FormControl isInvalid={isDefined(errors.username)}>
-          <FormLabel>Username</FormLabel>
-          <Input
-            type="text"
-            {...register("username", {
-              required: "Username is required",
-            })}
-          />
-          {errors.username && <FormErrorMessage>{errors.username.message}</FormErrorMessage>}
-        </FormControl>
-        <FormControl isInvalid={isDefined(errors.passcode)}>
-          <FormLabel>Passcode</FormLabel>
-          <Input
-            type="password"
-            {...register("passcode", {
-              required: "Passcode is required",
-            })}
-          />
-          {errors.passcode && <FormErrorMessage>{errors.passcode.message}</FormErrorMessage>}
-        </FormControl>
-        <FormControl>
-          <FormLabel>Enabled</FormLabel>
-          <Switch size="sm" {...register("enabled")} />
-        </FormControl>
+        <SimpleGrid column={1} spacing={1}>
+          <FormControl isInvalid={isDefined(errors.username)}>
+            <FormLabel m={0}>Username</FormLabel>
+            <Input
+              type="text"
+              {...register("username", {
+                required: "Username is required",
+              })}
+            />
+            {errors.username && <FormErrorMessage mt="1px">{errors.username.message}</FormErrorMessage>}
+          </FormControl>
+          <FormControl isInvalid={isDefined(errors.passcode)}>
+            <FormLabel m={0}>Passcode</FormLabel>
+            <PssswordInput
+              inputProps={{
+                ...register("passcode", {
+                  required: "Passcode is required",
+                }),
+              }}
+            />
+            {errors.passcode && <FormErrorMessage mt="1px">{errors.passcode.message}</FormErrorMessage>}
+          </FormControl>
+          <FormControl display="flex" alignItems="center">
+            <FormLabel m={0}>Enabled</FormLabel>
+            <Switch ml={2} size="sm" {...register("enabled")} />
+          </FormControl>
+        </SimpleGrid>
       </CreateModal>
 
       <Container>

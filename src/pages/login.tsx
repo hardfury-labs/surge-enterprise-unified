@@ -1,20 +1,16 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/router";
-import { FiEye, FiEyeOff } from "react-icons/fi";
-import {
-  Button, Center, FormControl, FormErrorMessage, Heading, Icon, Input, InputGroup, InputRightElement, SimpleGrid,
-  useToast,
-} from "@chakra-ui/react";
+import { Button, FormControl, FormErrorMessage, Heading, SimpleGrid, useToast } from "@chakra-ui/react";
 import SHA256 from "crypto-js/sha256";
 import { get } from "lodash";
 
+import { PssswordInput } from "@/components/chakra";
 import { fetchApi } from "@/fetchers/api";
 import { useStore } from "@/store";
 import { sleep } from "@/utils";
 
 const Login = () => {
   const [password, setPassword] = useState("");
-  const [isShowing, setShowing] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -81,20 +77,15 @@ const Login = () => {
 
       <SimpleGrid w="100%" maxW="320px" mb={32} columns={1} spacing={3}>
         <FormControl isInvalid={error !== null && password !== ""}>
-          <InputGroup size="lg">
-            <Input
-              placeholder="Enter password"
-              value={password}
-              type={isShowing ? "text" : "password"}
-              autoFocus={true}
-              onChange={(event) => onInput(event.target.value)}
-            />
-            <InputRightElement>
-              <Center cursor="pointer" color="gray.400" onClick={() => setShowing(!isShowing)}>
-                {isShowing ? <Icon as={FiEye} /> : <Icon as={FiEyeOff} />}
-              </Center>
-            </InputRightElement>
-          </InputGroup>
+          <PssswordInput
+            inputGroupProps={{ size: "lg" }}
+            inputProps={{
+              placeholder: "Enter password",
+              value: password,
+              autoFocus: true,
+              onChange: (event) => onInput(event.target.value),
+            }}
+          />
           {error !== null && password !== "" ? <FormErrorMessage>{error}</FormErrorMessage> : null}
         </FormControl>
 
