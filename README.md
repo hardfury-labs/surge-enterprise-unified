@@ -21,19 +21,22 @@ All fields are expected to be stored and read as strings, and then serialised (J
 
 Due to [technical issues](https://github.com/luin/ioredis/issues/769#issuecomment-1480869051) and page responsiveness, the `SB_PASSWORD` can only be set in `env` currently.
 
-| Key                           | Description                                                     | Location    | Schema                                           | Default |
-| ----------------------------- | --------------------------------------------------------------- | ----------- | ------------------------------------------------ | ------- |
-| SB_PASSWORD                   | Password to access the management portal                        | env         | string                                           | `pass`  |
-| SB_DATASTORAGE                | Data storage source, which can be `env` or redis connection uri | env         | string                                           | `env`   |
-| SB_USERS                      | Users with access to Surge profile link                         | env / redis | [User](src/interfaces/configuration.ts#L3)[]     | []      |
-| SB_PROVIDERS                  | Upstream subscription sources for proxy servers                 | env / redis | [Provider](src/interfaces/configuration.ts#L9)[] | []      |
-| SB_TEMPLATE                   | Template for Surge profile                                      | env / redis | string                                           | ''      |
-| SB_SURGE_ENTERPRISE_API_TOKEN | Surge Enterprise API token                                      | env / redis | string                                           | null    |
+| Key                           | Description                                                     | Location    | Schema                                      | Default |
+| ----------------------------- | --------------------------------------------------------------- | ----------- | ------------------------------------------- | ------- |
+| SB_PASSWORD                   | Password to access the management portal                        | env         | string                                      | `pass`  |
+| SB_DATASTORAGE                | Data storage source, which can be `env` or redis connection uri | env         | string                                      | `env`   |
+| SB_USERS                      | Users with access to Surge profile link                         | env / redis | [UserRecord](src/types/user.ts#L9)          | {}      |
+| SB_PROVIDERS                  | Upstream subscription sources for proxy servers                 | env / redis | [ProviderRecord](src/types/provider.ts#L12) | {}      |
+| SB_TEMPLATE                   | Template for Surge profile                                      | env / redis | string                                      | ''      |
+| SB_SURGE_ENTERPRISE_API_TOKEN | Surge Enterprise API token                                      | env / redis | string                                      | null    |
 
 ## Roadmaps
 
+- [ ] User roles group?
+- [ ] Provider roles group?
+- [ ] Template roles group?
 - [ ] Support Cloudflare KV as data storage
-- [ ] Support Serverless PostgreSQL [neon?](https://neon.tech) as data storage
+- [ ] Support Serverless PostgreSQL ([neon?](https://neon.tech)) as data storage
 
 ## References
 

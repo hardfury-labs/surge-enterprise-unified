@@ -1,10 +1,10 @@
 import { useCallback, useEffect } from "react";
-import NavLink from "next/link";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { FiFileText, FiHome, FiServer, FiSettings, FiUsers } from "react-icons/fi";
+import { FiChevronDown, FiFileText, FiHome, FiServer, FiSettings, FiUsers } from "react-icons/fi";
 import {
-  Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Center, Flex, FlexProps, Heading, Icon,
-  Link, LinkProps, SimpleGrid, SimpleGridProps, Spinner, Text,
+  Box, BoxProps, Center, Collapse, Flex, FlexProps, Heading, Icon, Link, LinkProps, SimpleGrid, SimpleGridProps,
+  Spinner, Text,
 } from "@chakra-ui/react";
 import { get } from "lodash";
 
@@ -29,41 +29,77 @@ export const SingleLayout = (props: FlexProps) => (
 
 // TODO: change to @chakra-ui/next-js?
 // https://dev.to/tungdt90/how-to-use-activelink-in-chakra-ui-with-nextjs-4l9a
-const MenuItem = ({ isActive, ...props }: LinkProps & { isActive?: boolean }) => (
-  <Box pr={3} borderRight={isActive ? "4px solid" : "4px solid transparent"} transition="all 0.2s">
-    <Link
-      as={NavLink}
-      p={2}
-      display="flex"
-      alignItems="center"
-      rounded="md"
-      _hover={{ bgColor: "gray.200" }}
-      transition="all 0.2s"
-      {...(isActive && { bgColor: "gray.200", fontWeight: "bold" })}
-      {...props}
-    />
-  </Box>
-);
-
-export const Nav = (props: SimpleGridProps) => {
-  const routes = [
-    { name: "Summary", path: "/", icon: <Icon as={FiHome} /> },
-    { name: "User", path: "/user", icon: <Icon as={FiUsers} /> },
-    { name: "Provider", path: "/provider", icon: <Icon as={FiServer} /> },
-    { name: "Template", path: "/template", icon: <Icon as={FiFileText} /> },
-    { name: "Settings", path: "/settings", icon: <Icon as={FiSettings} /> },
-  ];
-
+// https://github.com/chakra-ui/chakra-ui/discussions/4777
+const NavLink = ({ info: { name, path, icon }, ...props }: LinkProps & { info: RouteInfo }) => {
   const route = useRouter();
 
   return (
-    <SimpleGrid pl={4} column={1} spacing={2} {...props}>
-      {routes.map(({ name, path, icon }) => (
-        <MenuItem key={name} href={path} isActive={route.asPath === path}>
+    <Box
+      pr={3}
+      borderRight={route.asPath === path ? "0.25rem solid" : "0.25rem solid transparent"}
+      transition="all 0.2s"
+    >
+      <Link
+        as={NextLink}
+        href={path}
+        p={2}
+        display="flex"
+        alignItems="center"
+        rounded="md"
+        _hover={{ bgColor: "gray.200" }}
+        transition="all 0.2s"
+        {...(route.asPath === path && { bgColor: "gray.200", fontWeight: "bold" })}
+        {...props}
+      >
+        {icon}
+        <Text ml={2}>{name}</Text>
+      </Link>
+    </Box>
+  );
+};
+
+const Menu = ({ info: { name, subRoutes, icon }, ...props }: BoxProps & { info: RouteInfo }) => {
+  return (
+    <>
+      <Flex mr={4} p={2} justifyContent="space-between" alignItems="center" rounded="md" {...props}>
+        <Flex alignItems="center">
           {icon}
           <Text ml={2}>{name}</Text>
-        </MenuItem>
-      ))}
+        </Flex>
+        <Icon ml={2} mt="1px" as={FiChevronDown} />
+      </Flex>
+      <Collapse in={true} animateOpacity>
+        {subRoutes?.map((info) => (
+          <NavLink key={info.name} ml={4} info={info} />
+        ))}
+      </Collapse>
+    </>
+  );
+};
+
+interface RouteInfo {
+  name: string;
+  path?: string;
+  subRoutes?: RouteInfo[];
+  icon?: React.ReactNode;
+}
+
+export const Nav = (props: SimpleGridProps) => {
+  const routes: RouteInfo[] = [
+    { name: "Summary", path: "/", icon: <Icon as={FiHome} boxSize={4} /> },
+    { name: "User", path: "/user", icon: <Icon as={FiUsers} boxSize={4} /> },
+    { name: "Provider", path: "/provider", icon: <Icon as={FiServer} boxSize={4} /> },
+    { name: "Template", path: "/template", icon: <Icon as={FiFileText} boxSize={4} /> },
+    { name: "Settings", path: "/settings", icon: <Icon as={FiSettings} boxSize={4} /> },
+  ];
+
+  return (
+    <SimpleGrid pl={4} column={1} spacing={2} {...props}>
+      {routes.map((info) => {
+        if (info.subRoutes) return <Menu key={info.name} info={info} />;
+
+        return <NavLink key={info.name} info={info} />;
+      })}
     </SimpleGrid>
   );
 };
