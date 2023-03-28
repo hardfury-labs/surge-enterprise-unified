@@ -33,6 +33,7 @@ Due to [technical issues](https://github.com/luin/ioredis/issues/769#issuecommen
 ## Roadmaps
 
 - [ ] Support Cloudflare KV as data storage
+- [ ] Support Serverless PostgreSQL [neon?](https://neon.tech) as data storage
 
 ## References
 

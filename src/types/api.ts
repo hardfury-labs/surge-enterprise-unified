@@ -45,3 +45,8 @@ export const ApiUserDTO = {
     }),
   }),
 };
+
+/*
+ * /api/provider
+ */
+export const ApiProviderDTO = {};

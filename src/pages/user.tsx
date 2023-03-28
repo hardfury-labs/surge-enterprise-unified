@@ -241,7 +241,7 @@ const User = () => {
           </FormControl>
           <FormControl display="flex" alignItems="center">
             <FormLabel m={0}>Enabled</FormLabel>
-            <Switch ml={2} size="sm" {...register("enabled")} />
+            <Switch ml={2} mt="1px" size="sm" {...register("enabled")} />
           </FormControl>
         </SimpleGrid>
       </CreateModal>
