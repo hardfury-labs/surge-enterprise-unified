@@ -1,9 +1,10 @@
 import { useCallback, useEffect } from "react";
 import NavLink from "next/link";
 import { useRouter } from "next/router";
-import { FiActivity, FiFileText, FiServer, FiSettings, FiUsers } from "react-icons/fi";
+import { FiFileText, FiHome, FiServer, FiSettings, FiUsers } from "react-icons/fi";
 import {
-  Box, Center, Flex, FlexProps, Heading, Icon, Link, LinkProps, SimpleGrid, SimpleGridProps, Spinner, Text,
+  Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Center, Flex, FlexProps, Heading, Icon,
+  Link, LinkProps, SimpleGrid, SimpleGridProps, Spinner, Text,
 } from "@chakra-ui/react";
 import { get } from "lodash";
 
@@ -46,7 +47,7 @@ const MenuItem = ({ isActive, ...props }: LinkProps & { isActive?: boolean }) =>
 
 export const Nav = (props: SimpleGridProps) => {
   const routes = [
-    { name: "Summary", path: "/", icon: <Icon as={FiActivity} /> },
+    { name: "Summary", path: "/", icon: <Icon as={FiHome} /> },
     { name: "User", path: "/user", icon: <Icon as={FiUsers} /> },
     { name: "Provider", path: "/provider", icon: <Icon as={FiServer} /> },
     { name: "Template", path: "/template", icon: <Icon as={FiFileText} /> },

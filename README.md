@@ -1,6 +1,6 @@
 # Surge Balancer
 
-Unified profile management for **Surge** or **Surge Enterprise**, for those with **multiple upstream subscription sources** or **multiple user**.
+Unified profile management for **Surge** or **Surge Enterprise**, for those with **multiple upstream subscription sources** or **multiple user**. By Surge user, for Surge user.
 
 Many thanks to the [surgio project](https://github.com/surgioproject/surgio)!
 
