@@ -1,4 +1,4 @@
-import { ProviderRecord } from "./provider";
+import { ProviderRecord, ProviderType } from "./provider";
 import { UserRecord } from "./user";
 
 export type EnvValue = string | null | undefined;
@@ -27,6 +27,7 @@ export interface Configuration {
   // from data storage
   users: UserRecord;
   providers: ProviderRecord;
+  providerTypes: ProviderType[];
   template: string;
   seApiToken?: string;
 }

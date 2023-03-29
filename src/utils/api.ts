@@ -21,12 +21,25 @@ export const ApiError = (statusCode: number, message: string) => {
   throw error;
 };
 
-export const ncOptions: Options<NextApiRequest, NextApiResponse<ApiResponse>> = {
+export const ncApiOptions: Options<NextApiRequest, NextApiResponse<ApiResponse>> = {
   onError: (err, req, res, next) => {
+    if (process.env.NODE_ENV === "development") console.log(err);
+
     return res.status(err.statusCode || 500).json({ success: false, message: err.message || "Internal server error" });
   },
   onNoMatch: (req, res) => {
     return res.status(405).json({ success: false, message: "Method not allowed" });
+  },
+};
+
+export const ncProfileOptions: Options<NextApiRequest, NextApiResponse<string>> = {
+  onError: (err, req, res, next) => {
+    if (process.env.NODE_ENV === "development") console.log(err);
+
+    return res.status(err.statusCode || 500).send(err.message || "Internal server error");
+  },
+  onNoMatch: (req, res) => {
+    return res.status(405).send("Method not allowed");
   },
 };
 
