@@ -40,8 +40,12 @@ export class Config implements Configuration {
 
   // from data storage
   public users: UserRecord;
+
   public providers: ProviderRecord;
+  public providerTypes: string[];
+
   public template: string;
+
   public seApiToken?: string;
 
   constructor({
@@ -50,9 +54,14 @@ export class Config implements Configuration {
     features,
     warnings,
     password,
+
     users,
+
     providers,
+    providerTypes,
+
     template,
+
     seApiToken,
   }: Configuration) {
     this.dataStorageType = dataStorageType;
@@ -62,8 +71,12 @@ export class Config implements Configuration {
     this.password = password;
 
     this.users = users;
+
     this.providers = providers;
+    this.providerTypes = providerTypes;
+
     this.template = template;
+
     this.seApiToken = seApiToken;
   }
 
@@ -169,6 +182,7 @@ export class Config implements Configuration {
         password: DEFAULT_PASSWORD,
         users: {},
         providers: {},
+        providerTypes: [],
         template: "",
       }, // default
       configuration, // custom

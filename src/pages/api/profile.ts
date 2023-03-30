@@ -13,22 +13,6 @@ import { ApiError, ApiSuccess, authorize, ncProfileOptions, validate } from "@/u
 const handler = nc<NextApiRequest, NextApiResponse>(ncProfileOptions).get(async (req, res) => {
   // validate(req, res, ApiUserDTO.UNIVERSAL);
 
-  const templateEngine = getEngine("");
-
-  const artifactInstance = new Artifact(
-    {},
-    {
-      name: "Surge",
-      provider: "surge",
-      templateString: "[]",
-    },
-    {
-      templateEngine,
-    },
-  );
-
-  await artifactInstance.init();
-
   res.status(200).send("1");
 });
 

@@ -64,3 +64,39 @@ async function run(config: CommandConfig, skipFail?: boolean, cacheSnippet?: boo
   }
 }
 ```
+
+## 4. Artifact generation
+
+[lib/generator/artifact.ts#L241](https://github.com/surgioproject/surgio/blob/master/lib/generator/artifact.ts#L241)
+
+```typescript
+  public async init({
+    requestUserAgent,
+  }: { requestUserAgent?: string } = {}): Promise<this> {
+    // ...
+
+    await Bluebird.map(
+      this.providerNameList,
+      async (providerName) => {
+        // fetch url
+        await this.providerMapper(providerName, { requestUserAgent });
+      },
+      {
+        concurrency: getNetworkConcurrency(),
+      },
+    );
+
+    // ...
+  }
+```
+
+[lib/generator/artifact.ts#L314](https://github.com/surgioproject/surgio/blob/master/lib/generator/artifact.ts#L314)
+
+```typescript
+  private async providerMapper(
+    providerName: string,
+    { requestUserAgent }: { requestUserAgent?: string } = {},
+  ): Promise<void> {
+    // ...
+  }
+```

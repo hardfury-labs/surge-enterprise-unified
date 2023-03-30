@@ -19,9 +19,3 @@ export interface ProviderInfo extends Provider {
 export type ProviderArray = ProviderInfo[];
 
 // https://manual.nssurge.com/policy/proxy.html
-export type ProviderType =
-  | SupportProviderEnum.Clash
-  | SupportProviderEnum.ShadowsocksSubscribe
-  | SupportProviderEnum.ShadowsocksJsonSubscribe
-  | SupportProviderEnum.V2rayNSubscribe
-  | SupportProviderEnum.Trojan;

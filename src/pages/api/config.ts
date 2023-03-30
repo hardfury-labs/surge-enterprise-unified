@@ -2,9 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
 
 import { Config } from "@/configuration";
-import { ApiSuccess, authorize, ncOptions } from "@/utils/api";
+import { ApiSuccess, authorize, ncApiOptions } from "@/utils/api";
 
-const handler = nc<NextApiRequest, NextApiResponse>(ncOptions)
+const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
   .use(authorize)
   .get(async (req, res) => {
     const config = await Config.load();

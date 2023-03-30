@@ -6,9 +6,9 @@ import { z } from "zod";
 
 import { AUTH_COOKIE_NAME, getPassword } from "@/constants";
 import { ApiLoginDTO } from "@/types/api";
-import { ApiError, ApiSuccess, ncOptions, validate } from "@/utils/api";
+import { ApiError, ApiSuccess, ncApiOptions, validate } from "@/utils/api";
 
-const handler = nc<NextApiRequest, NextApiResponse>(ncOptions).post(async (req, res) => {
+const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions).post(async (req, res) => {
   validate(req, res, ApiLoginDTO);
 
   const password = getPassword();
