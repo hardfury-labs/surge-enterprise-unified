@@ -3,10 +3,10 @@ import { z } from "zod";
 import { SubscriptionSchema } from "./subscription";
 import { UserSchema } from "./user";
 
-export interface ApiResponse<T = null> {
+export interface ApiResponse<TData = null> {
   success: boolean;
   message?: string;
-  data?: T;
+  data?: TData;
 }
 
 export interface ApiErrorResponse {

@@ -9,7 +9,7 @@ import { SubscriptionRecord, SubscriptionRecordSchema } from "@/types/subscripti
 import { UserRecord, UserRecordSchema } from "@/types/user";
 import { formatZodErrors } from "@/utils";
 
-const jsonParse = <T extends z.ZodSchema>(env: Env, key: string, schema: T) => {
+const jsonParse = <TSchema extends z.ZodSchema>(env: Env, key: string, schema: TSchema) => {
   const errors: string[] = [];
   let data;
   // The upper level function has judged
@@ -20,7 +20,7 @@ const jsonParse = <T extends z.ZodSchema>(env: Env, key: string, schema: T) => {
     const result = schema.safeParse(json);
 
     if (!result.success) errors.push(`[${key}] ${formatZodErrors(result.error).join(", ")}`);
-    else data = result.data as z.infer<T>;
+    else data = result.data as z.infer<TSchema>;
   } catch (error) {
     errors.push(`[${key}] Invalid JSON string`);
   }

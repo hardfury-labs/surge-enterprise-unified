@@ -9,7 +9,10 @@ import { AUTH_COOKIE_NAME, getPassword } from "@/constants";
 import { ApiResponse } from "@/types/api";
 import { formatZodErrors } from "@/utils";
 
-export const ApiSuccess = <T = any>(res: NextApiResponse, { message, data }: { message?: string; data?: T } = {}) => {
+export const ApiSuccess = <TData = any>(
+  res: NextApiResponse,
+  { message, data }: { message?: string; data?: TData } = {},
+) => {
   return res.status(200).json({ success: true, message, data });
 };
 
@@ -43,7 +46,7 @@ export const ncProfileOptions: Options<NextApiRequest, NextApiResponse<string>> 
   },
 };
 
-export const validate = <T extends z.ZodSchema>(req: NextApiRequest, res: NextApiResponse, schema: T) => {
+export const validate = <TSchema extends z.ZodSchema>(req: NextApiRequest, res: NextApiResponse, schema: TSchema) => {
   const result = schema.safeParse(req);
 
   if (!result.success) return ApiError(400, formatZodErrors(result.error).join(", "));

@@ -68,6 +68,7 @@ export const useStore = create<State>()(
           );
         }),
 
+      // https://github.com/chakra-ui/chakra-ui/issues/1693
       toast: createStandaloneToast().toast,
 
       postData: async (

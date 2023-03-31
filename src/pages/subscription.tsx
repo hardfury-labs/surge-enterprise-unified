@@ -65,7 +65,7 @@ const Subscription = () => {
           <FormInput<Required<SubscriptionInfo>> label="Name" id="name" required control={control} />
           <FormInput<Required<SubscriptionInfo>> label="URL" id="url" required control={control} />
           <FormSelect<Required<SubscriptionInfo>>
-            label="Link Type"
+            label="Subscription Link Type"
             id="type"
             required
             control={control}
