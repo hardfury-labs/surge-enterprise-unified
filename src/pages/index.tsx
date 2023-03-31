@@ -9,7 +9,7 @@ const Index = () => {
   const config = useStore((state) => state.config);
   const [summaries, setSummaries] = useState<{
     "Enabled Users / Total Users": string;
-    providers: number;
+    subscriptions: number;
     surgeEnterpriseApiToken: string;
   } | null>(null);
 
@@ -19,7 +19,7 @@ const Index = () => {
         "Enabled Users / Total Users": `${Object.values(config.users).filter((user) => user.enabled).length} / ${
           Object.keys(config.users).length
         }`,
-        providers: Object.keys(config.providers).length,
+        subscriptions: Object.keys(config.subscriptions).length,
         surgeEnterpriseApiToken: config.seApiToken ? "SET" : "NOT SET",
       });
   }, [config]);

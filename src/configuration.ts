@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { DEFAULT_PASSWORD } from "@/constants";
 import { Configuration, DataStorageType, DataStorageUri, Env } from "@/types/configuration";
-import { ProviderRecord, ProviderRecordSchema } from "@/types/provider";
+import { SubscriptionRecord, SubscriptionRecordSchema } from "@/types/subscription";
 import { UserRecord, UserRecordSchema } from "@/types/user";
 import { formatZodErrors } from "@/utils";
 
@@ -29,6 +29,7 @@ const jsonParse = <T extends z.ZodSchema>(env: Env, key: string, schema: T) => {
 };
 
 let redis: Redis | null = null;
+const dbKeys = ["SB_USERS", "SB_SUBSCRIPTIONS", "SB_TEMPLATE", "SB_SE_API_TOKEN"];
 
 export class Config implements Configuration {
   // from env and cannot be changed
@@ -39,8 +40,8 @@ export class Config implements Configuration {
   public password: string;
   // from data storage
   public users: UserRecord;
-  public providers: ProviderRecord;
-  public providerTypes: string[];
+  public subscriptions: SubscriptionRecord;
+  public subscriptionTypes: string[];
   public template: string;
   public seApiToken?: string;
 
@@ -51,8 +52,8 @@ export class Config implements Configuration {
     warnings,
     password,
     users,
-    providers,
-    providerTypes,
+    subscriptions,
+    subscriptionTypes,
     template,
     seApiToken,
   }: Configuration) {
@@ -64,8 +65,8 @@ export class Config implements Configuration {
 
     this.users = users;
 
-    this.providers = providers;
-    this.providerTypes = providerTypes;
+    this.subscriptions = subscriptions;
+    this.subscriptionTypes = subscriptionTypes;
 
     this.template = template;
 
@@ -80,8 +81,8 @@ export class Config implements Configuration {
       warnings: this.warnings,
       password: this.password,
       users: this.users,
-      providers: this.providers,
-      providerTypes: this.providerTypes,
+      subscriptions: this.subscriptions,
+      subscriptionTypes: this.subscriptionTypes,
       template: this.template,
       seApiToken: this.seApiToken,
     };
@@ -133,12 +134,11 @@ export class Config implements Configuration {
 
         // mget or hmget
         // mget allows data to be displayed more clearly in the browser
-        const keys = ["SB_USERS", "SB_PROVIDERS", "SB_TEMPLATE", "SB_SE_API_TOKEN"];
-        const values = await redis.mget(keys);
-        if (keys.length !== values.length) throw new Error("Invalid data length");
+        const values = await redis.mget(dbKeys);
+        if (values.length !== dbKeys.length) throw new Error("Invalid data length");
 
         env = {};
-        keys.forEach((key, index) => (env[key] = values[index]));
+        dbKeys.forEach((key, index) => (env[key] = values[index]));
 
         configuration.dataStorageType = "redis";
         configuration.features.writable = true;
@@ -157,10 +157,10 @@ export class Config implements Configuration {
       if (errors.length > 0) configuration.warnings.push(...errors);
     }
 
-    if (env.SB_PROVIDERS) {
-      const { errors, data } = jsonParse(env, "SB_PROVIDERS", ProviderRecordSchema);
+    if (env.SB_SUBSCRIPTIONS) {
+      const { errors, data } = jsonParse(env, "SB_SUBSCRIPTIONS", SubscriptionRecordSchema);
 
-      if (data) configuration.providers = data;
+      if (data) configuration.subscriptions = data;
       if (errors.length > 0) configuration.warnings.push(...errors);
     }
 
@@ -173,8 +173,8 @@ export class Config implements Configuration {
         dataStorageType: "env",
         password: DEFAULT_PASSWORD,
         users: {},
-        providers: {},
-        providerTypes: [],
+        subscriptions: {},
+        subscriptionTypes: [],
         template: "",
       }, // default
       configuration, // custom
@@ -197,13 +197,6 @@ export class Config implements Configuration {
 
       const result = await redis.set(key, data);
       if (result !== "OK") throw new Error(`Failed to set ${key}`);
-
-      // const pipeline = redis.pipeline();
-      // pipeline.set("SB_USERS", JSON.stringify(users));
-      // pipeline.set("SB_PROVIDERS", JSON.stringify(providers));
-      // pipeline.set("SB_TEMPLATE", template);
-      // pipeline.set("SB_SE_API_TOKEN", seApiToken);
-      // pipeline.exec();
     }
 
     // unknown

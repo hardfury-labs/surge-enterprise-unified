@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { SubscriptionSchema } from "./subscription";
 import { UserSchema } from "./user";
 
 export interface ApiResponse<T = null> {
@@ -33,7 +34,6 @@ export const ApiUserDTO = {
         z.literal("editUsers"),
         z.literal("enableAll"),
         z.literal("disableAll"),
-        z.literal("deleteUsers"),
       ]),
     }),
   }),
@@ -47,6 +47,19 @@ export const ApiUserDTO = {
 };
 
 /*
- * /api/provider
+ * /api/subscription
  */
-export const ApiProviderDTO = {};
+export const ApiSubscriptionDTO = {
+  UNIVERSAL: z.object({
+    body: z.object({
+      method: z.union([z.literal("editSubscriptions"), z.literal("enableAll"), z.literal("disableAll")]),
+    }),
+  }),
+
+  editSubscriptions: z.object({
+    body: z.object({
+      method: z.literal("editSubscriptions"),
+      subscriptions: z.record(z.string({ description: "uuid" }), SubscriptionSchema.nullable()),
+    }),
+  }),
+};

@@ -1,29 +1,16 @@
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import {
-  ButtonGroup,
-  Card,
-  CardBody,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  SimpleGrid,
-  Switch,
-  Th,
-  Tr,
+  ButtonGroup, Card, CardBody, FormControl, FormErrorMessage, FormLabel, Input, SimpleGrid, Switch, Th, Tr,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { get } from "lodash";
+import { get, omit } from "lodash";
 
 import { Breadcrumb, Container, PssswordInput, WritableButton, WritableSwitch, WritableTip } from "@/components/chakra";
 import { CreateModal } from "@/components/modal";
 import { DataTable, TableMeta } from "@/components/table";
-import { fetchApi } from "@/fetchers/api";
 import { PostDataOptions, useStore } from "@/store";
-import { ApiResponse } from "@/types/api";
 import { UserInfo } from "@/types/user";
 import { desc2Hump, isDefined } from "@/utils";
 
@@ -51,8 +38,6 @@ const User = () => {
     },
     shouldFocusError: false,
   });
-
-  const toast = useToast();
 
   const columnHelper = createColumnHelper<UserInfo>();
   const columns = [
@@ -165,11 +150,11 @@ const User = () => {
           reset();
         }}
         isLoading={isLoading("Add New User")}
-        onSubmit={handleSubmit(({ username, passcode, enabled }) =>
+        onSubmit={handleSubmit((info) =>
           postData("editUsers", {
-            description: `Add New User ${username}`,
+            description: `Add New User ${info.username}`,
             loadingKey: "Add New User",
-            data: { users: { [username]: { passcode, enabled } } },
+            data: { users: { [info.username]: omit(info, "username") } },
             successCallback: () => {
               reset();
               closeModal();

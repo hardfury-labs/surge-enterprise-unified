@@ -88,7 +88,7 @@ export const Nav = (props: SimpleGridProps) => {
   const routes: RouteInfo[] = [
     { name: "Summary", path: "/", icon: <Icon as={FiHome} boxSize={4} /> },
     { name: "User", path: "/user", icon: <Icon as={FiUsers} boxSize={4} /> },
-    { name: "Provider", path: "/provider", icon: <Icon as={FiServer} boxSize={4} /> },
+    { name: "Subscription", path: "/subscription", icon: <Icon as={FiServer} boxSize={4} /> },
     { name: "Template", path: "/template", icon: <Icon as={FiFileText} boxSize={4} /> },
     { name: "Settings", path: "/settings", icon: <Icon as={FiSettings} boxSize={4} /> },
   ];
