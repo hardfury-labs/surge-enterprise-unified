@@ -55,11 +55,11 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
         validate(req, res, ApiUserDTO.editUsers);
 
         const config = await Config.load();
-        const { users } = (req as z.infer<typeof ApiUserDTO.editUsers>).body;
+        const { users: postUsers } = (req as z.infer<typeof ApiUserDTO.editUsers>).body;
 
         const tempUsers = cloneDeep(config.users);
 
-        Object.entries(users).forEach(([username, newInfo]) => {
+        Object.entries(postUsers).forEach(([username, newInfo]) => {
           // find user info by username
           const oldInfo = get(tempUsers, username);
 

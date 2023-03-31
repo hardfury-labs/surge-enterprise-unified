@@ -26,15 +26,18 @@ export const ApiLoginDTO = z.object({
 /*
  * /api/user
  */
+export const ApiUserMethodSchema = z.union([
+  z.literal("syncUsers"),
+  z.literal("editUsers"),
+  z.literal("enableAll"),
+  z.literal("disableAll"),
+]);
+export type ApiUserMethod = z.infer<typeof ApiUserMethodSchema>;
+
 export const ApiUserDTO = {
   UNIVERSAL: z.object({
     body: z.object({
-      method: z.union([
-        z.literal("syncUsers"),
-        z.literal("editUsers"),
-        z.literal("enableAll"),
-        z.literal("disableAll"),
-      ]),
+      method: ApiUserMethodSchema,
     }),
   }),
 
@@ -49,10 +52,17 @@ export const ApiUserDTO = {
 /*
  * /api/subscription
  */
+export const ApiSubscriptionMethodSchema = z.union([
+  z.literal("editSubscriptions"),
+  z.literal("enableAll"),
+  z.literal("disableAll"),
+]);
+export type ApiSubscriptionMethod = z.infer<typeof ApiSubscriptionMethodSchema>;
+
 export const ApiSubscriptionDTO = {
   UNIVERSAL: z.object({
     body: z.object({
-      method: z.union([z.literal("editSubscriptions"), z.literal("enableAll"), z.literal("disableAll")]),
+      method: ApiSubscriptionMethodSchema,
     }),
   }),
 

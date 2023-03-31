@@ -20,11 +20,11 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
         validate(req, res, ApiSubscriptionDTO.editSubscriptions);
 
         const config = await Config.load();
-        const { subscriptions } = (req as z.infer<typeof ApiSubscriptionDTO.editSubscriptions>).body;
+        const { subscriptions: postSubscriptions } = (req as z.infer<typeof ApiSubscriptionDTO.editSubscriptions>).body;
 
         const tempSubscriptions = cloneDeep(config.subscriptions);
 
-        Object.entries(subscriptions).forEach(([name, newInfo]) => {
+        Object.entries(postSubscriptions).forEach(([name, newInfo]) => {
           // find subscription info by name
           const oldInfo = get(tempSubscriptions, name);
 
@@ -55,6 +55,9 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
 
         return ApiSuccess(res);
       }
+
+      default:
+        return ApiError(400, "Invalid method");
     }
   });
 

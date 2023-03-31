@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { ButtonGroup, Card, CardBody, Input, SimpleGrid, Switch, Th, Tr, useDisclosure } from "@chakra-ui/react";
+import { ButtonGroup, Card, CardBody, SimpleGrid, Th, Tr, useBoolean } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { get, omit } from "lodash";
 
@@ -9,20 +9,21 @@ import { FormInput, FormPasswordInput, FormSwitch } from "@/components/form";
 import { CreateModal } from "@/components/modal";
 import { DataTable, TableMeta } from "@/components/table";
 import { PostDataOptions, useStore } from "@/store";
+import { ApiUserMethod } from "@/types/api";
 import { UserInfo } from "@/types/user";
 import { desc2Hump } from "@/utils";
 
 const User = () => {
   const config = useStore((state) => state.config);
   const postData = useStore(
-    (state) => (method: string, options: PostDataOptions) =>
+    (state) => (method: ApiUserMethod, options: PostDataOptions) =>
       state.postData("/api/user", method, { loadingKeyPrefix: "user", ...options }),
   );
 
   const loadings = useStore((state) => state.loadings);
   const isLoading = useCallback((name: string) => get(loadings, `user.${desc2Hump(name)}`, false), [loadings]);
 
-  const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
+  const [isModalOpen, { on: openModal, off: closeModal }] = useBoolean();
   const { control, handleSubmit, reset } = useForm<Required<UserInfo>>({
     defaultValues: {
       username: "",
@@ -41,11 +42,11 @@ const User = () => {
     }),
     columnHelper.accessor("passcode", {}),
     columnHelper.accessor("enabled", {
-      cell: (info) => {
-        const enabled = info.getValue();
+      cell: (cellInfo) => {
+        const enabled = cellInfo.getValue();
 
-        const username: string = info.row.getValue("username");
-        const userinfo = info.row._valuesCache;
+        const username: string = cellInfo.row.getValue("username");
+        const info = cellInfo.row._valuesCache;
 
         const description = enabled ? `Disable User ${username}` : `Enable User ${username}`;
 
@@ -58,7 +59,7 @@ const User = () => {
             onChange={() =>
               postData("editUsers", {
                 description,
-                data: { users: { [username]: { ...userinfo, enabled: !enabled } } },
+                data: { users: { [username]: { ...info, enabled: !enabled } } },
               })
             }
           />
@@ -183,7 +184,7 @@ const User = () => {
             <DataTable
               columns={columns}
               extraHeaders={extraHeaders}
-              data={Object.entries(config.users || {}).map(([username, userinfo]) => ({ username, ...userinfo })) || []}
+              data={Object.entries(config.users || {}).map(([username, info]) => ({ username, ...info })) || []}
             />
           </CardBody>
         </Card>
