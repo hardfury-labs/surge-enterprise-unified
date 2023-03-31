@@ -5,10 +5,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Props as SelectProps, Select } from "chakra-react-select";
 import { get, omit } from "lodash";
 
-import { Breadcrumb, Container, PssswordInput, WritableButton, WritableSwitch, WritableTip } from "@/components/chakra";
+import { Breadcrumb, Container, WritableButton, WritableSwitch } from "@/components/chakra";
+import { FormInput, FormSelect, FormSwitch } from "@/components/form";
 import { CreateModal } from "@/components/modal";
 import { DataTable, TableMeta } from "@/components/table";
 import { PostDataOptions, useStore } from "@/store";
@@ -26,12 +26,7 @@ const Subscription = () => {
   const isLoading = useCallback((name: string) => get(loadings, `subscription.${desc2Hump(name)}`, false), [loadings]);
 
   const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useForm<Required<SubscriptionInfo>>({
+  const { control, handleSubmit, reset } = useForm<Required<SubscriptionInfo>>({
     defaultValues: {
       name: "",
       url: "",
@@ -67,54 +62,25 @@ const Subscription = () => {
         )}
       >
         <SimpleGrid column={1} spacing={1}>
-          <FormControl isInvalid={isDefined(errors.name)}>
-            <FormLabel m={0}>Name</FormLabel>
-            <Input
-              type="text"
-              {...register("name", {
-                required: "Name is required",
-              })}
-            />
-            {errors.name && <FormErrorMessage mt="1px">{errors.name.message}</FormErrorMessage>}
-          </FormControl>
-          <FormControl isInvalid={isDefined(errors.url)}>
-            <FormLabel m={0}>URL</FormLabel>
-            <Input
-              type="text"
-              {...register("url", {
-                required: "URL is required",
-              })}
-            />
-            {errors.url && <FormErrorMessage mt="1px">{errors.url.message}</FormErrorMessage>}
-          </FormControl>
-          <FormControl isInvalid={isDefined(errors.type)}>
-            <FormLabel m={0}>Link Type</FormLabel>
-            <Select
-              options={config.subscriptionTypes.map((type) => ({ label: type, value: type }))}
-              {...register("type", {
-                required: "Type is required",
-              })}
-            />
-            {errors.type && <FormErrorMessage mt="1px">{errors.type.message}</FormErrorMessage>}
-          </FormControl>
-          <FormControl display="flex" alignItems="center">
-            <FormLabel m={0}>UDP Relay</FormLabel>
-            <Switch ml={2} mt="1px" size="sm" {...register("udpRelay")} />
-          </FormControl>
-          <FormControl display="flex" alignItems="center">
-            <FormLabel m={0}>Enabled</FormLabel>
-            <Switch ml={2} mt="1px" size="sm" {...register("enabled")} />
-          </FormControl>
+          <FormInput<Required<SubscriptionInfo>> label="Name" id="name" required control={control} />
+          <FormInput<Required<SubscriptionInfo>> label="URL" id="url" required control={control} />
+          <FormSelect<Required<SubscriptionInfo>>
+            label="Link Type"
+            id="type"
+            required
+            control={control}
+            options={config.subscriptionTypes.map((type) => ({ value: type, label: type }))}
+          />
+          <FormSwitch<Required<SubscriptionInfo>> label="UDP Relay" id="udpRelay" control={control} />
+          <FormSwitch<Required<SubscriptionInfo>> label="Enabled" id="enabled" control={control} />
         </SimpleGrid>
       </CreateModal>
 
       <Container>
         <ButtonGroup mb={4}>
-          <WritableTip description="Add Subscription">
-            <WritableButton variant="black-ghost" onClick={openModal}>
-              Add Subscription
-            </WritableButton>
-          </WritableTip>
+          <WritableButton tooltipProps={{ actionName: "Add Subscription" }} variant="black-ghost" onClick={openModal}>
+            Add Subscription
+          </WritableButton>
         </ButtonGroup>
       </Container>
     </>

@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { FiAlertCircle, FiEye, FiEyeOff } from "react-icons/fi";
 import BeatLoader from "react-spinners/BeatLoader";
 import {
   Box, BoxProps, Button, ButtonProps, Card, CardBody, CardProps, Center, Flex, Heading, Icon, Input, InputGroup,
   InputGroupProps, InputProps, InputRightElement, Switch, SwitchProps, Tooltip as ChakraTooltip, TooltipProps,
+  useBoolean,
 } from "@chakra-ui/react";
 
 import { useStore } from "@/store";
@@ -14,13 +14,13 @@ export const PssswordInput = ({
 }: {
   inputGroupProps?: InputGroupProps;
 } & InputProps) => {
-  const [isShowing, setShowing] = useState(false);
+  const [isShowing, { toggle }] = useBoolean(false);
 
   return (
     <InputGroup {...inputGroupProps}>
       <Input type={isShowing ? "text" : "password"} {...props} />
       <InputRightElement>
-        <Center cursor="pointer" color="gray.400" onClick={() => setShowing(!isShowing)}>
+        <Center cursor="pointer" color="gray.400" onClick={toggle}>
           {isShowing ? <Icon as={FiEye} /> : <Icon as={FiEyeOff} />}
         </Center>
       </InputRightElement>

@@ -4,8 +4,8 @@ import { ButtonGroup, Card, CardBody, Input, SimpleGrid, Switch, Th, Tr, useDisc
 import { createColumnHelper } from "@tanstack/react-table";
 import { get, omit } from "lodash";
 
-import { Breadcrumb, Container, PssswordInput, WritableButton, WritableSwitch } from "@/components/chakra";
-import { FormItem } from "@/components/form";
+import { Breadcrumb, Container, WritableButton, WritableSwitch } from "@/components/chakra";
+import { FormInput, FormPasswordInput, FormSwitch } from "@/components/form";
 import { CreateModal } from "@/components/modal";
 import { DataTable, TableMeta } from "@/components/table";
 import { PostDataOptions, useStore } from "@/store";
@@ -152,21 +152,9 @@ const User = () => {
         )}
       >
         <SimpleGrid column={1} spacing={1}>
-          <FormItem<Required<UserInfo>> label="Username" id="username" required control={control}>
-            <Input type="text" />
-          </FormItem>
-          <FormItem<Required<UserInfo>> label="Passcode" id="passcode" required control={control}>
-            <PssswordInput />
-          </FormItem>
-          <FormItem<Required<UserInfo>>
-            label="Enabled"
-            id="enabled"
-            control={control}
-            display="flex"
-            alignItems="center"
-          >
-            <Switch ml={2} mt="1px" size="sm" />
-          </FormItem>
+          <FormInput<Required<UserInfo>> label="Username" id="username" required control={control} />
+          <FormPasswordInput<Required<UserInfo>> label="Passcode" id="passcode" required control={control} />
+          <FormSwitch<Required<UserInfo>> label="Enabled" id="enabled" control={control} />
         </SimpleGrid>
       </CreateModal>
 
