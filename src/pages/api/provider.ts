@@ -12,6 +12,8 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
   .use(authorize)
   .post(async (req, res) => {
     // validate(req, res, ApiUserDTO.UNIVERSAL);
+
+    const { method } = req.body;
   });
 
 export default handler;

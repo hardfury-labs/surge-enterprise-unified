@@ -37,15 +37,11 @@ export class Config implements Configuration {
   public features: { writable: boolean };
   public warnings: string[];
   public password: string;
-
   // from data storage
   public users: UserRecord;
-
   public providers: ProviderRecord;
   public providerTypes: string[];
-
   public template: string;
-
   public seApiToken?: string;
 
   constructor({
@@ -54,14 +50,10 @@ export class Config implements Configuration {
     features,
     warnings,
     password,
-
     users,
-
     providers,
     providerTypes,
-
     template,
-
     seApiToken,
   }: Configuration) {
     this.dataStorageType = dataStorageType;
@@ -87,9 +79,9 @@ export class Config implements Configuration {
       features: this.features,
       warnings: this.warnings,
       password: this.password,
-
       users: this.users,
       providers: this.providers,
+      providerTypes: this.providerTypes,
       template: this.template,
       seApiToken: this.seApiToken,
     };

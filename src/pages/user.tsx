@@ -1,8 +1,19 @@
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import {
-  ButtonGroup, Card, CardBody, FormControl, FormErrorMessage, FormLabel, Input, SimpleGrid, Switch, Th, Tr,
-  useDisclosure, useToast,
+  ButtonGroup,
+  Card,
+  CardBody,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  SimpleGrid,
+  Switch,
+  Th,
+  Tr,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { get } from "lodash";
@@ -11,18 +22,19 @@ import { Breadcrumb, Container, PssswordInput, WritableButton, WritableSwitch, W
 import { CreateModal } from "@/components/modal";
 import { DataTable, TableMeta } from "@/components/table";
 import { fetchApi } from "@/fetchers/api";
-import { useStore } from "@/store";
+import { PostDataOptions, useStore } from "@/store";
 import { ApiResponse } from "@/types/api";
 import { UserInfo } from "@/types/user";
 import { desc2Hump, isDefined } from "@/utils";
 
 const User = () => {
   const config = useStore((state) => state.config);
-  const getConfig = useStore((state) => state.getConfig);
+  const postData = useStore(
+    (state) => (method: string, options: PostDataOptions) =>
+      state.postData("/api/user", method, { loadingKeyPrefix: "user", ...options }),
+  );
 
   const loadings = useStore((state) => state.loadings);
-  const startLoading = useStore((state) => (name: string) => state.startLoading(`user.${desc2Hump(name)}`));
-  const stopLoading = useStore((state) => (name: string) => state.stopLoading(`user.${desc2Hump(name)}`));
   const isLoading = useCallback((name: string) => get(loadings, `user.${desc2Hump(name)}`, false), [loadings]);
 
   const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
@@ -41,58 +53,6 @@ const User = () => {
   });
 
   const toast = useToast();
-
-  const action = async (
-    method: string,
-    {
-      description,
-      loadingKey,
-      successCallback,
-      showSuccessMsg = true,
-      showErrorMsg = true,
-      data = {},
-    }: {
-      description: string;
-      loadingKey?: string;
-      successCallback?: () => void;
-      showSuccessMsg?: boolean;
-      showErrorMsg?: boolean;
-      data?: object;
-    },
-  ) => {
-    const key = loadingKey ?? desc2Hump(description);
-    startLoading(key);
-
-    await fetchApi
-      .post<any, ApiResponse>("/api/user", { method, ...data })
-      .then(({ message }) => {
-        if (showSuccessMsg)
-          toast({
-            title: `${description} Successful`,
-            description: message,
-            status: "success",
-            position: "top",
-            duration: 2000,
-          });
-
-        if (successCallback) successCallback();
-
-        getConfig();
-      })
-      .catch((error) => {
-        if (showErrorMsg)
-          toast({
-            title: `Failed to ${description}`,
-            description: error.message,
-            status: "error",
-            position: "top",
-            duration: 2000,
-          });
-      })
-      .finally(() => {
-        stopLoading(key);
-      });
-  };
 
   const columnHelper = createColumnHelper<UserInfo>();
   const columns = [
@@ -118,7 +78,7 @@ const User = () => {
               isChecked={enabled}
               isDisabled={isLoading(description)}
               onChange={() =>
-                action("editUsers", {
+                postData("editUsers", {
                   description,
                   data: { users: { [username]: { ...userinfo, enabled: !enabled } } },
                 })
@@ -146,7 +106,7 @@ const User = () => {
                 colorScheme="red"
                 isLoading={isLoading(description)}
                 isDisabled={isLoading(description)}
-                onClick={() => action("editUsers", { description, data: { users: { [username]: null } } })}
+                onClick={() => postData("editUsers", { description, data: { users: { [username]: null } } })}
               >
                 Delete
               </WritableButton>
@@ -171,7 +131,7 @@ const User = () => {
               variant="black-ghost"
               isLoading={isLoading("Enable All Users")}
               isDisabled={isLoading("Enable All Users")}
-              onClick={() => action("enableAll", { description: "Enable All Users" })}
+              onClick={() => postData("enableAll", { description: "Enable All Users" })}
             >
               Enable All
             </WritableButton>
@@ -182,7 +142,7 @@ const User = () => {
               variant="black-ghost"
               isLoading={isLoading("Disable All Users")}
               isDisabled={isLoading("Disable All Users")}
-              onClick={() => action("disableAll", { description: "Disable All Users" })}
+              onClick={() => postData("disableAll", { description: "Disable All Users" })}
             >
               Disable All
             </WritableButton>
@@ -206,7 +166,7 @@ const User = () => {
         }}
         isLoading={isLoading("Add New User")}
         onSubmit={handleSubmit(({ username, passcode, enabled }) =>
-          action("editUsers", {
+          postData("editUsers", {
             description: `Add New User ${username}`,
             loadingKey: "Add New User",
             data: { users: { [username]: { passcode, enabled } } },
@@ -261,7 +221,7 @@ const User = () => {
               variant="black-ghost"
               isLoading={isLoading("Sync Users")}
               isDisabled={!config.seApiToken || isLoading("Sync Users")}
-              onClick={() => action("syncUsers", { description: "Sync Users" })}
+              onClick={() => postData("syncUsers", { description: "Sync Users" })}
             >
               Sync from Surge Enterprise
             </WritableButton>
