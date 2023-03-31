@@ -174,7 +174,7 @@ export class Config implements Configuration {
         password: DEFAULT_PASSWORD,
         users: {},
         subscriptions: {},
-        subscriptionTypes: [],
+        subscriptionTypes: ["shadowsocks_subscribe", "shadowsocks_json_subscribe", "surge", "clash"],
         template: "",
       }, // default
       configuration, // custom

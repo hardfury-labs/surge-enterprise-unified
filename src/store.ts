@@ -83,7 +83,8 @@ export const useStore = create<State>()(
           data = {},
         }: PostDataOptions,
       ) => {
-        let key = loadingKey ?? desc2Hump(description);
+        let key = loadingKey ?? description;
+        key = desc2Hump(key);
         if (loadingKeyPrefix) key = `${loadingKeyPrefix}.${key}`;
 
         get().startLoading(key);

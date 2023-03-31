@@ -79,12 +79,10 @@ const Login = () => {
         <FormControl isInvalid={error !== null && password !== ""}>
           <PssswordInput
             inputGroupProps={{ size: "lg" }}
-            inputProps={{
-              placeholder: "Enter password",
-              value: password,
-              autoFocus: true,
-              onChange: (event) => onInput(event.target.value),
-            }}
+            placeholder="Enter password"
+            value={password}
+            autoFocus
+            onChange={(event) => onInput(event.target.value)}
           />
           {error !== null && password !== "" ? <FormErrorMessage>{error}</FormErrorMessage> : null}
         </FormControl>

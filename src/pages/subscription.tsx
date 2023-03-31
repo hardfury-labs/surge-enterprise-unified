@@ -1,11 +1,11 @@
 import { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { useController, UseControllerProps, useForm } from "react-hook-form";
 import {
   ButtonGroup, Card, CardBody, FormControl, FormErrorMessage, FormLabel, Input, SimpleGrid, Switch, Th, Tr,
   useDisclosure,
 } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Select } from "chakra-react-select";
+import { Props as SelectProps, Select } from "chakra-react-select";
 import { get, omit } from "lodash";
 
 import { Breadcrumb, Container, PssswordInput, WritableButton, WritableSwitch, WritableTip } from "@/components/chakra";
@@ -88,9 +88,9 @@ const Subscription = () => {
             {errors.url && <FormErrorMessage mt="1px">{errors.url.message}</FormErrorMessage>}
           </FormControl>
           <FormControl isInvalid={isDefined(errors.type)}>
-            <FormLabel m={0}>Type</FormLabel>
+            <FormLabel m={0}>Link Type</FormLabel>
             <Select
-              options={[]}
+              options={config.subscriptionTypes.map((type) => ({ label: type, value: type }))}
               {...register("type", {
                 required: "Type is required",
               })}

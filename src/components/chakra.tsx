@@ -10,16 +10,15 @@ import { useStore } from "@/store";
 
 export const PssswordInput = ({
   inputGroupProps,
-  inputProps,
+  ...props
 }: {
   inputGroupProps?: InputGroupProps;
-  inputProps?: InputProps;
-}) => {
+} & InputProps) => {
   const [isShowing, setShowing] = useState(false);
 
   return (
     <InputGroup {...inputGroupProps}>
-      <Input type={isShowing ? "text" : "password"} {...inputProps} />
+      <Input type={isShowing ? "text" : "password"} {...props} />
       <InputRightElement>
         <Center cursor="pointer" color="gray.400" onClick={() => setShowing(!isShowing)}>
           {isShowing ? <Icon as={FiEye} /> : <Icon as={FiEyeOff} />}
@@ -50,12 +49,18 @@ export const Warning = ({ children, ...props }: CardProps) => (
   </Card>
 );
 
-export const WritableTip = ({ description, label, ...props }: TooltipProps & { description: string }) => {
+type WritableTipProps = Omit<TooltipProps, "children"> & { description?: string; actionName: string };
+
+const WritableTip = ({
+  description,
+  actionName,
+  ...props
+}: TooltipProps & { description?: string; actionName: string }) => {
   const config = useStore((state) => state.config);
 
   return !config.features.writable ? (
     <ChakraTooltip
-      label={label ?? `The ${description} cannot be used in ${config.dataStorageType} datastore`}
+      label={description ? description : `The ${actionName} cannot be used in ${config.dataStorageType} datastore`}
       {...props}
     />
   ) : (
@@ -63,20 +68,36 @@ export const WritableTip = ({ description, label, ...props }: TooltipProps & { d
   );
 };
 
-export const WritableButton = ({ isDisabled, ...props }: ButtonProps) => {
+export const WritableButton = ({
+  tooltipProps,
+  isDisabled,
+  ...props
+}: {
+  tooltipProps: WritableTipProps;
+} & ButtonProps) => {
   const config = useStore((state) => state.config);
 
   return (
-    <Button
-      isDisabled={!config.features.writable || isDisabled}
-      spinner={<BeatLoader size={6} color="#9ca3af" />}
-      {...props}
-    />
+    <WritableTip {...tooltipProps}>
+      <Button
+        isDisabled={!config.features.writable || isDisabled}
+        spinner={<BeatLoader size={6} color="#9ca3af" />}
+        {...props}
+      />
+    </WritableTip>
   );
 };
 
-export const WritableSwitch = ({ isDisabled, ...props }: SwitchProps) => {
+export const WritableSwitch = ({
+  tooltipProps,
+  isDisabled,
+  ...props
+}: { tooltipProps: WritableTipProps } & SwitchProps) => {
   const config = useStore((state) => state.config);
 
-  return <Switch isDisabled={!config.features.writable || isDisabled} {...props} />;
+  return (
+    <WritableTip {...tooltipProps}>
+      <Switch isDisabled={!config.features.writable || isDisabled} {...props} />
+    </WritableTip>
+  );
 };

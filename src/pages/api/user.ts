@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Config } from "@/configuration";
 import { fetchSEApi, SEApiUsersData } from "@/fetchers/surge";
 import { ApiUserDTO } from "@/types/api";
+import { User, UserSchema } from "@/types/user";
 import { ApiError, ApiSuccess, authorize, ncApiOptions, validate } from "@/utils/api";
 
 const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
@@ -66,16 +67,17 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
           if (!oldInfo) {
             // and newInfo is not null, create new user
             // !only pick specific fields to prevent data injection
-            if (newInfo) tempUsers[username] = pick(newInfo, "passcode", "enabled");
+            if (newInfo) tempUsers[username] = pick(newInfo, Object.keys(UserSchema.strict().shape)) as User;
             else ApiError(403, `User ${username} doesn't exist`);
           }
+
           // if user exists
           else {
             // and newInfo is null, delete user
             if (!newInfo) delete tempUsers[username];
             // and newInfo is not null, update user
             // !only pick specific fields to prevent data injection
-            else tempUsers[username] = { ...oldInfo, ...pick(newInfo, "passcode", "enabled") };
+            else tempUsers[username] = { ...oldInfo, ...pick(newInfo, Object.keys(UserSchema.strict().shape)) };
           }
         });
 

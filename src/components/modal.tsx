@@ -1,7 +1,8 @@
 import {
-  Button, ButtonGroup, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay,
-  ModalProps,
+  ButtonGroup, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, ModalProps,
 } from "@chakra-ui/react";
+
+import { WritableButton } from "@/components/chakra";
 
 export const CreateModal = ({
   isOpen,
@@ -24,9 +25,15 @@ export const CreateModal = ({
         <ModalBody>{children}</ModalBody>
         <ModalFooter>
           <ButtonGroup>
-            <Button variant="black-ghost" isLoading={isLoading} isDisabled={isLoading} onClick={onSubmit}>
+            <WritableButton
+              tooltipProps={{ actionName: title }}
+              variant="black-ghost"
+              isLoading={isLoading}
+              isDisabled={isLoading}
+              onClick={onSubmit}
+            >
               Submit
-            </Button>
+            </WritableButton>
           </ButtonGroup>
         </ModalFooter>
       </ModalContent>

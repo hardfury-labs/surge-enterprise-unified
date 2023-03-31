@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { Config } from "@/configuration";
 import { ApiSubscriptionDTO } from "@/types/api";
+import { Subscription, SubscriptionSchema } from "@/types/subscription";
 import { ApiError, ApiSuccess, authorize, ncApiOptions, validate } from "@/utils/api";
 
 const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
@@ -31,16 +32,22 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
           if (!oldInfo) {
             // and newInfo is not null, create new subscription
             // !only pick specific fields to prevent data injection
-            if (newInfo) tempSubscriptions[name] = pick(newInfo, "url", "type", "udpRelay", "enabled");
+            if (newInfo)
+              tempSubscriptions[name] = pick(newInfo, Object.keys(SubscriptionSchema.strict().shape)) as Subscription;
             else ApiError(403, `Subscription ${name} doesn't exist`);
           }
+
           // if subscription exists
           else {
             // and newInfo is null, delete subscription
             if (!newInfo) delete tempSubscriptions[name];
             // and newInfo is not null, update subscription
             // !only pick specific fields to prevent data injection
-            else tempSubscriptions[name] = { ...oldInfo, ...pick(newInfo, "url", "type", "udpRelay", "enabled") };
+            else
+              tempSubscriptions[name] = {
+                ...oldInfo,
+                ...pick(newInfo, Object.keys(SubscriptionSchema.strict().shape)),
+              };
           }
         });
 
