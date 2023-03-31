@@ -36,7 +36,7 @@ export const FormInput = <TFieldValues extends FieldValues>({
 
   return (
     <FormControl id={id} isInvalid={!!error} {...formControlProps}>
-      <FormLabel m={0}>{label}</FormLabel>
+      <FormLabel mb={0}>{label}</FormLabel>
 
       <Input value={value} onChange={onChange} {...props} />
 
@@ -67,7 +67,7 @@ export const FormPasswordInput = <TFieldValues extends FieldValues>({
 
   return (
     <FormControl id={id} isInvalid={!!error} {...formControlProps}>
-      <FormLabel m={0}>{label}</FormLabel>
+      <FormLabel mb={0}>{label}</FormLabel>
 
       <PssswordInput value={value} onChange={onChange} {...props} />
 
@@ -98,21 +98,17 @@ export const FormSwitch = <TFieldValues extends FieldValues>({
 
   return (
     <FormControl id={id} isInvalid={!!error} {...formControlProps}>
-      <FormLabel m={0}>{label}</FormLabel>
+      <FormLabel mb={0}>{label}</FormLabel>
 
-      <Switch ml={2} mt="1px" size="sm" isChecked={value} onChange={onChange} {...props} />
+      <Switch mt="1px" size="sm" isChecked={value} onChange={onChange} {...props} />
 
       <FormErrorMessage mt="1px">{error && error.message}</FormErrorMessage>
     </FormControl>
   );
 };
 
-interface Option extends OptionBase {
-  label: string;
-  value: string;
-}
-
-export const FormSelect = <TFieldValues extends FieldValues>({
+// options are array of strings https://github.com/JedWatson/react-select/issues/5369#issuecomment-1385434021
+export const FormSelect = <TFieldValues extends FieldValues, Option extends String>({
   label,
   id,
   control,
@@ -122,7 +118,7 @@ export const FormSelect = <TFieldValues extends FieldValues>({
   ...props
 }: FormLabelType<TFieldValues> &
   SetRequired<Omit<UseControllerProps<TFieldValues>, "name">, "control"> &
-  SelectProps<Option, false, GroupBase<Option>>) => {
+  SelectProps<Option, false>) => {
   const {
     field: { ref, value, onChange },
     fieldState: { error },
@@ -134,14 +130,17 @@ export const FormSelect = <TFieldValues extends FieldValues>({
 
   return (
     <FormControl id={id} isInvalid={!!error} {...formControlProps}>
-      <FormLabel m={0}>{label}</FormLabel>
+      <FormLabel mb={0}>{label}</FormLabel>
 
-      <Select<Option, false, GroupBase<Option>>
+      <Select<Option, false>
         name={id}
         ref={ref}
         value={value}
         onChange={onChange}
+        isMulti={false}
         closeMenuOnSelect
+        getOptionValue={String}
+        getOptionLabel={String}
         {...props}
       />
 

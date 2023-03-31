@@ -1,9 +1,6 @@
 import { useCallback } from "react";
-import { useController, UseControllerProps, useForm } from "react-hook-form";
-import {
-  ButtonGroup, Card, CardBody, FormControl, FormErrorMessage, FormLabel, Input, SimpleGrid, Switch, Th, Tr,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
+import { ButtonGroup, Card, CardBody, Input, SimpleGrid, Switch, Th, Tr, useDisclosure } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { get, omit } from "lodash";
 
@@ -64,12 +61,12 @@ const Subscription = () => {
         <SimpleGrid column={1} spacing={1}>
           <FormInput<Required<SubscriptionInfo>> label="Name" id="name" required control={control} />
           <FormInput<Required<SubscriptionInfo>> label="URL" id="url" required control={control} />
-          <FormSelect<Required<SubscriptionInfo>>
+          <FormSelect<Required<SubscriptionInfo>, String>
             label="Subscription Link Type"
             id="type"
             required
             control={control}
-            options={config.subscriptionTypes.map((type) => ({ value: type, label: type }))}
+            options={config.subscriptionTypes.map((type) => new String(type))}
           />
           <FormSwitch<Required<SubscriptionInfo>> label="UDP Relay" id="udpRelay" control={control} />
           <FormSwitch<Required<SubscriptionInfo>> label="Enabled" id="enabled" control={control} />
