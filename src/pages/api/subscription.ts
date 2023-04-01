@@ -1,13 +1,16 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
-import { pick } from "lodash";
+import Bluebird from "bluebird";
+import { get, pick } from "lodash";
 import { z } from "zod";
 
 import { Config } from "@/configuration";
+import { fetchSubscription } from "@/fetchers/subscription";
 import { ApiSubscriptionDTO } from "@/types/api";
 import { Subscription, SubscriptionSchema } from "@/types/subscription";
 import { mapToObject, objectToMap } from "@/utils";
 import { ApiError, ApiSuccess, authorize, ncApiOptions, validate } from "@/utils/api";
+import { subscriptionParsers } from "@/utils/surgio";
 
 const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
   .use(authorize)
@@ -53,6 +56,39 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
         });
 
         await config.set("subscriptions", mapToObject(dbSubscriptions));
+
+        return ApiSuccess(res);
+      }
+
+      case "checkSubscriptions": {
+        validate(req, res, ApiSubscriptionDTO.checkSubscriptions);
+
+        const config = await Config.load();
+        const { subscriptions: postSubscriptions } = (req as z.infer<typeof ApiSubscriptionDTO.checkSubscriptions>)
+          .body;
+
+        const dbSubscriptions = objectToMap(config.subscriptions);
+        const dbSubscriptionCaches = objectToMap(config.subscriptionCaches);
+
+        await Bluebird.map(
+          postSubscriptions,
+          async (name) => {
+            const info = dbSubscriptions.get(name);
+
+            if (!info) return ApiError(403, `Subscription ${name} doesn't exist`);
+
+            const response = await fetchSubscription(info.url);
+            const parser = get(subscriptionParsers, info.type);
+            const { nodeList } = parser(response, info);
+
+            dbSubscriptionCaches.set(name, { body: response.data, updated: 1, nodeCount: nodeList.length });
+          },
+          {
+            concurrency: 5,
+          },
+        );
+
+        await config.set("subscriptionCaches", mapToObject(dbSubscriptionCaches));
 
         return ApiSuccess(res);
       }

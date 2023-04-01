@@ -5,7 +5,9 @@ import { z } from "zod";
 
 import { DEFAULT_PASSWORD } from "@/constants";
 import { Configuration, DataStorageType, DataStorageUri, Env } from "@/types/configuration";
-import { SubscriptionCacheRecord, SubscriptionRecord, SubscriptionRecordSchema } from "@/types/subscription";
+import {
+  SubscriptionCacheRecord, SubscriptionCacheRecordSchema, SubscriptionRecord, SubscriptionRecordSchema,
+} from "@/types/subscription";
 import { UserRecord, UserRecordSchema } from "@/types/user";
 import { formatZodErrors, toEnvKey } from "@/utils";
 
@@ -169,6 +171,13 @@ export class Config implements Configuration {
       if (errors.length > 0) configuration.warnings.push(...errors);
     }
 
+    if (env.SB_SUBSCRIPTION_CACHES) {
+      const { errors, data } = jsonParse(env, "SB_SUBSCRIPTION_CACHES", SubscriptionCacheRecordSchema);
+
+      if (data) configuration.subscriptionCaches = data;
+      if (errors.length > 0) configuration.warnings.push(...errors);
+    }
+
     if (env.SB_TEMPLATE) configuration.template = env.SB_TEMPLATE;
 
     if (env.SB_SE_API_TOKEN) configuration.seApiToken = env.SB_SE_API_TOKEN;
@@ -191,7 +200,7 @@ export class Config implements Configuration {
     return new Config(config);
   }
 
-  async set(key: "users" | "subscriptions" | "template" | "seApiToken", value: any) {
+  async set(key: "users" | "subscriptions" | "subscriptionCaches" | "template" | "seApiToken", value: any) {
     // env
     if (this.dataStorageType === "env") throw new Error("Cannot set configuration in env data storage");
     // redis

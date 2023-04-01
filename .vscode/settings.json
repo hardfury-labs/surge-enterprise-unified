@@ -4,6 +4,7 @@
   "editor.tabSize": 2,
   "editor.codeActionsOnSave": ["source.formatDocument", "source.organizeImports.sortImports"],
   "eslint.validate": ["typescript"],
+  "typescript.tsdk": "node_modules/typescript/lib",
   // https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments
   "better-comments.multilineComments": true,
   "better-comments.tags": [

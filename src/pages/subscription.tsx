@@ -51,7 +51,7 @@ const Subscription = () => {
       cell: (cellInfo) => {
         const udpRelay = cellInfo.getValue();
 
-        const name: string = cellInfo.row.getValue("name");
+        const name = cellInfo.row.getValue<string>("name");
         const info = cellInfo.row._valuesCache;
 
         const description = udpRelay
@@ -75,12 +75,19 @@ const Subscription = () => {
     }),
     columnHelper.accessor(() => {}, {
       header: "nodes",
+      cell: (cellInfo) => {
+        const name = cellInfo.row.getValue<string>("name");
+
+        const cache = get(config.subscriptionCaches, name);
+
+        return cache ? cache.nodeCount : "-";
+      },
     }),
     columnHelper.accessor("enabled", {
       cell: (cellInfo) => {
         const enabled = cellInfo.getValue();
 
-        const name: string = cellInfo.row.getValue("name");
+        const name = cellInfo.row.getValue<string>("name");
         const info = cellInfo.row._valuesCache;
 
         const description = enabled ? `Disable Subscription ${name}` : `Enable Subscription ${name}`;
@@ -108,17 +115,20 @@ const Subscription = () => {
       cell: (info) => {
         const name: string = info.row.getValue("name");
 
-        const description = `Delete Subscription ${name}`;
-
         return (
           <ButtonGroup>
             <WritableButton
               tooltipProps={{ actionName: "Check Subscription" }}
               size="xs"
               variant="black-ghost"
-              isLoading={isLoading(description)}
-              isDisabled={isLoading(description)}
-              // onClick={() => postData("checkSubscriptions", { description, data: { subscriptions: [name] } })}
+              isLoading={isLoading(`Check Subscription ${name}`)}
+              isDisabled={isLoading(`Check Subscription ${name}`)}
+              onClick={() =>
+                postData("checkSubscriptions", {
+                  description: `Check Subscription ${name}`,
+                  data: { subscriptions: [name] },
+                })
+              }
             >
               Check
             </WritableButton>
@@ -126,9 +136,14 @@ const Subscription = () => {
               tooltipProps={{ actionName: "Delete Subscription" }}
               size="xs"
               colorScheme="red"
-              isLoading={isLoading(description)}
-              isDisabled={isLoading(description)}
-              onClick={() => postData("editSubscriptions", { description, data: { subscriptions: { [name]: null } } })}
+              isLoading={isLoading(`Delete Subscription ${name}`)}
+              isDisabled={isLoading(`Delete Subscription ${name}`)}
+              onClick={() =>
+                postData("editSubscriptions", {
+                  description: `Delete Subscription ${name}`,
+                  data: { subscriptions: { [name]: null } },
+                })
+              }
             >
               Delete
             </WritableButton>

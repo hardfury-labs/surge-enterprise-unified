@@ -54,6 +54,7 @@ export const ApiUserDTO = {
  */
 export const ApiSubscriptionMethodSchema = z.union([
   z.literal("editSubscriptions"),
+  z.literal("checkSubscriptions"),
   z.literal("enableAll"),
   z.literal("disableAll"),
 ]);
@@ -69,7 +70,14 @@ export const ApiSubscriptionDTO = {
   editSubscriptions: z.object({
     body: z.object({
       method: z.literal("editSubscriptions"),
-      subscriptions: z.record(z.string({ description: "uuid" }), SubscriptionSchema.nullable()),
+      subscriptions: z.record(z.string({ description: "name" }), SubscriptionSchema.nullable()),
+    }),
+  }),
+
+  checkSubscriptions: z.object({
+    body: z.object({
+      method: z.literal("checkSubscriptions"),
+      subscriptions: z.array(z.string({ description: "name" })),
     }),
   }),
 };

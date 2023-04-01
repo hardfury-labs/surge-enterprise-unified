@@ -3,7 +3,7 @@ import Axios, { AxiosError } from "axios";
 /*
  * Surge Enterprise API
  */
-export const fetchSEApi = Axios.create({ baseURL: "https://enterprise.nssurge.com/api/admin" });
+export const fetchSEApi = Axios.create({ baseURL: "https://enterprise.nssurge.com/api/admin", timeout: 1000 * 10 });
 
 export interface SEApiErrorResponse {
   error: string;

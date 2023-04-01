@@ -45,7 +45,7 @@ const User = () => {
       cell: (cellInfo) => {
         const enabled = cellInfo.getValue();
 
-        const username: string = cellInfo.row.getValue("username");
+        const username = cellInfo.row.getValue<string>("username");
         const info = cellInfo.row._valuesCache;
 
         const description = enabled ? `Disable User ${username}` : `Enable User ${username}`;
@@ -70,8 +70,8 @@ const User = () => {
     }),
     columnHelper.accessor(() => {}, {
       header: "actions",
-      cell: (info) => {
-        const username: string = info.row.getValue("username");
+      cell: (cellInfo) => {
+        const username = cellInfo.row.getValue<string>("username");
 
         const description = `Delete User ${username}`;
 

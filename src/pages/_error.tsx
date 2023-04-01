@@ -3,7 +3,7 @@ import { ErrorProps } from "next/error";
 import { Center, Divider, Flex, Heading, Text } from "@chakra-ui/react";
 import { get } from "lodash";
 
-const Error500 = ({ statusCode, title }: ErrorProps) => (
+const Error50x = ({ statusCode, title }: ErrorProps) => (
   <Center h="100%" w="100%">
     <Flex flexDirection="column" textAlign="center">
       <Heading size="lg">{statusCode}</Heading>
@@ -18,11 +18,10 @@ const Error500 = ({ statusCode, title }: ErrorProps) => (
 );
 
 const errorMsgs = {
-  404: "This page could not be found",
   500: "An unexpected error has occurred",
 };
 
-Error500.getInitialProps = ({ res, err }: NextPageContext) => {
+Error50x.getInitialProps = ({ res, err }: NextPageContext) => {
   let statusCode = 500;
   if (res) statusCode = res.statusCode;
 
@@ -36,4 +35,4 @@ Error500.getInitialProps = ({ res, err }: NextPageContext) => {
   return { statusCode, title };
 };
 
-export default Error500;
+export default Error50x;
