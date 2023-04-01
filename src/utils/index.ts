@@ -10,10 +10,10 @@ export const formatZodErrors = (errors: z.ZodError) => {
 
 export const humpToDesc = (str: string) => {
   const words = str.split("");
-  const regex = /^[A-Z]+$/;
 
   words.forEach((word, index) => {
-    if (regex.test(word)) words[index] = ` ${word}`;
+    // if word is upper case AND not first word AND not ( or space before
+    if (/^[A-Z]+$/.test(word) && index !== 0 && !/^[\(\s+]$/.test(words[index - 1])) words[index] = ` ${word}`;
   });
 
   return upperFirst(words.join(""));
@@ -21,10 +21,9 @@ export const humpToDesc = (str: string) => {
 
 export const toEnvKey = (str: string) => {
   const words = str.split("");
-  const regex = /^[A-Z]+$/;
 
   words.forEach((word, index) => {
-    if (regex.test(word)) words[index] = `_${word}`;
+    if (/^[A-Z]+$/.test(word)) words[index] = `_${word}`;
   });
 
   return `SB_${words.join("").toUpperCase()}`;

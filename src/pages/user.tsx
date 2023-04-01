@@ -98,8 +98,9 @@ const User = () => {
   ];
   const extraHeaders = (
     <Tr>
-      <Th></Th>
-      <Th></Th>
+      {Array.from({ length: 2 }, (_, index) => (
+        <Th key={index} />
+      ))}
       <Th isNumeric>
         <ButtonGroup>
           <WritableButton

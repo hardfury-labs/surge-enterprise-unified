@@ -73,9 +73,9 @@ const Subscription = () => {
           />
         );
       },
-      meta: {
-        isNumeric: true,
-      } as TableMeta,
+    }),
+    columnHelper.accessor(() => {}, {
+      header: "nodes",
     }),
     columnHelper.accessor("enabled", {
       cell: (cellInfo) => {
@@ -144,10 +144,9 @@ const Subscription = () => {
   ];
   const extraHeaders = (
     <Tr>
-      <Th></Th>
-      <Th></Th>
-      <Th></Th>
-      <Th></Th>
+      {Array.from({ length: 5 }, (_, index) => (
+        <Th key={index} />
+      ))}
       <Th isNumeric>
         <ButtonGroup>
           <WritableButton

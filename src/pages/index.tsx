@@ -8,18 +8,20 @@ import { humpToDesc } from "@/utils";
 const Index = () => {
   const config = useStore((state) => state.config);
   const [summaries, setSummaries] = useState<{
-    "Enabled Users / Total Users": string;
-    subscriptions: number;
+    "Users (Enabled / Total)": string;
+    "Subscriptions (Enabled / Total)": string;
     surgeEnterpriseApiToken: string;
   } | null>(null);
 
   useEffect(() => {
     if (config)
       setSummaries({
-        "Enabled Users / Total Users": `${Object.values(config.users).filter((user) => user.enabled).length} / ${
+        "Users (Enabled / Total)": `${Object.values(config.users).filter((user) => user.enabled).length} / ${
           Object.keys(config.users).length
         }`,
-        subscriptions: Object.keys(config.subscriptions).length,
+        "Subscriptions (Enabled / Total)": `${
+          Object.values(config.subscriptions).filter((subscription) => subscription.enabled).length
+        } / ${Object.keys(config.subscriptions).length}`,
         surgeEnterpriseApiToken: config.seApiToken ? "SET" : "NOT SET",
       });
   }, [config]);
