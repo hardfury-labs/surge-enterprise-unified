@@ -61,7 +61,6 @@ const Subscription = () => {
         return (
           <WritableSwitch
             tooltipProps={{ actionName: "Switch Subscription" }}
-            size="sm"
             isChecked={udpRelay}
             isDisabled={isLoading(description)}
             onChange={() =>
@@ -89,7 +88,6 @@ const Subscription = () => {
         return (
           <WritableSwitch
             tooltipProps={{ actionName: "Switch Subscription" }}
-            size="sm"
             isChecked={enabled}
             isDisabled={isLoading(description)}
             onChange={() =>
@@ -117,10 +115,10 @@ const Subscription = () => {
             <WritableButton
               tooltipProps={{ actionName: "Check Subscription" }}
               size="xs"
-              colorScheme="blue"
+              variant="black-ghost"
               isLoading={isLoading(description)}
               isDisabled={isLoading(description)}
-              onClick={() => postData("editSubscriptions", { description, data: { subscriptions: { [name]: null } } })}
+              // onClick={() => postData("checkSubscriptions", { description, data: { subscriptions: [name] } })}
             >
               Check
             </WritableButton>

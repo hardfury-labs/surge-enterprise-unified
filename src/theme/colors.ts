@@ -1,6 +1,19 @@
 import { Colors } from "@chakra-ui/react";
 
 const colors = {
+  black: {
+    // 50: "#000000",
+    // 100: "#000000",
+    // 200: "#000000",
+    // 300: "#000000",
+    // 400: "#000000",
+    // for Switch
+    500: "#000000",
+    // 600: "#000000",
+    // 700: "#000000",
+    // 800: "#000000",
+    // 900: "#000000",
+  },
   // https://tailwindcss.com/docs/customizing-colors
   // https://github.com/tailwindlabs/tailwindcss/blob/master/src/public/colors.js
   slate: {

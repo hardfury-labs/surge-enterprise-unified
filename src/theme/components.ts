@@ -60,6 +60,12 @@ const components = {
       variant: "outline",
     },
   },
+  Switch: {
+    defaultProps: {
+      size: "sm",
+      colorScheme: "black",
+    },
+  },
 } as ThemeComponents;
 
 export default components;

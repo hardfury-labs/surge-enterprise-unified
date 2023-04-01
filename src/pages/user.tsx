@@ -53,7 +53,6 @@ const User = () => {
         return (
           <WritableSwitch
             tooltipProps={{ actionName: "Switch User" }}
-            size="sm"
             isChecked={enabled}
             isDisabled={isLoading("Enable All Users") || isLoading("Disable All Users") || isLoading(description)}
             onChange={() =>
