@@ -11,7 +11,7 @@ import { DataTable, TableMeta } from "@/components/table";
 import { PostDataOptions, useStore } from "@/store";
 import { ApiUserMethod } from "@/types/api";
 import { UserInfo } from "@/types/user";
-import { desc2Hump } from "@/utils";
+import { descToHump } from "@/utils";
 
 const User = () => {
   const config = useStore((state) => state.config);
@@ -21,7 +21,7 @@ const User = () => {
   );
 
   const loadings = useStore((state) => state.loadings);
-  const isLoading = useCallback((name: string) => get(loadings, `user.${desc2Hump(name)}`, false), [loadings]);
+  const isLoading = useCallback((name: string) => get(loadings, `user.${descToHump(name)}`, false), [loadings]);
 
   const [isModalOpen, { on: openModal, off: closeModal }] = useBoolean();
   const { control, handleSubmit, reset } = useForm<Required<UserInfo>>({

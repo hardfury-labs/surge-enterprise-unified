@@ -7,7 +7,7 @@ import { DEFAULT_PASSWORD } from "@/constants";
 import { Configuration, DataStorageType, DataStorageUri, Env } from "@/types/configuration";
 import { SubscriptionRecord, SubscriptionRecordSchema } from "@/types/subscription";
 import { UserRecord, UserRecordSchema } from "@/types/user";
-import { formatZodErrors } from "@/utils";
+import { formatZodErrors, toEnvKey } from "@/utils";
 
 const jsonParse = <TSchema extends z.ZodSchema>(env: Env, key: string, schema: TSchema) => {
   const errors: string[] = [];
@@ -29,7 +29,8 @@ const jsonParse = <TSchema extends z.ZodSchema>(env: Env, key: string, schema: T
 };
 
 let redis: Redis | null = null;
-const dbKeys = ["SB_USERS", "SB_SUBSCRIPTIONS", "SB_TEMPLATE", "SB_SE_API_TOKEN"];
+const dbKeys = ["users", "subscriptions", "template", "seApiToken"];
+const dbEnvKeys = dbKeys.map((key) => toEnvKey(key));
 
 export class Config implements Configuration {
   // from env and cannot be changed
@@ -134,11 +135,11 @@ export class Config implements Configuration {
 
         // mget or hmget
         // mget allows data to be displayed more clearly in the browser
-        const values = await redis.mget(dbKeys);
-        if (values.length !== dbKeys.length) throw new Error("Invalid data length");
+        const values = await redis.mget(dbEnvKeys);
+        if (values.length !== dbEnvKeys.length) throw new Error("Invalid data length");
 
         env = {};
-        dbKeys.forEach((key, index) => (env[key] = values[index]));
+        dbEnvKeys.forEach((key, index) => (env[key] = values[index]));
 
         configuration.dataStorageType = "redis";
         configuration.features.writable = true;
@@ -185,7 +186,7 @@ export class Config implements Configuration {
     return new Config(config);
   }
 
-  async set(key: string, value: any) {
+  async set(key: "users" | "subscriptions" | "template" | "seApiToken", value: any) {
     // env
     if (this.dataStorageType === "env") throw new Error("Cannot set configuration in env data storage");
     // redis
@@ -195,7 +196,7 @@ export class Config implements Configuration {
       let data = value;
       if (typeof value !== "string") data = JSON.stringify(value);
 
-      const result = await redis.set(key, data);
+      const result = await redis.set(toEnvKey(key), data);
       if (result !== "OK") throw new Error(`Failed to set ${key}`);
     }
 

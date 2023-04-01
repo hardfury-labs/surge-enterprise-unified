@@ -14,7 +14,7 @@ export const formatZodErrors = (errors: z.ZodError) => {
   return errors.issues.map((issue) => `${issue.path.join(".")} ${issue.message.toLowerCase()}`);
 };
 
-export const hump2Desc = (str: string) => {
+export const humpToDesc = (str: string) => {
   const words = str.split("");
   const regex = /^[A-Z]+$/;
 
@@ -25,4 +25,15 @@ export const hump2Desc = (str: string) => {
   return upperFirst(words.join(""));
 };
 
-export const desc2Hump = (str: string) => lowerFirst(str.replace(/\s+/g, ""));
+export const toEnvKey = (str: string) => {
+  const words = str.split("");
+  const regex = /^[A-Z]+$/;
+
+  words.forEach((word, index) => {
+    if (regex.test(word)) words[index] = `_${word}`;
+  });
+
+  return `SB_${words.join("").toUpperCase()}`;
+};
+
+export const descToHump = (str: string) => lowerFirst(str.replace(/\s+/g, ""));

@@ -51,7 +51,7 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
           }
         });
 
-        await config.set("SB_SUBSCRIPTIONS", tempSubscriptions);
+        await config.set("subscriptions", tempSubscriptions);
 
         return ApiSuccess(res);
       }

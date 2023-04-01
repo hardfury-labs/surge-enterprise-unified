@@ -43,7 +43,7 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
             }
           });
 
-          await config.set("SB_USERS", tempUsers);
+          await config.set("users", tempUsers);
 
           return ApiSuccess(res, { message: `Added ${add} users, updated ${update} users` });
         } catch (error) {
@@ -81,7 +81,7 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
           }
         });
 
-        await config.set("SB_USERS", tempUsers);
+        await config.set("users", tempUsers);
 
         return ApiSuccess(res);
       }
@@ -94,7 +94,7 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
 
         Object.keys(tempUsers).forEach((user) => (tempUsers[user].enabled = true));
 
-        await config.set("SB_USERS", tempUsers);
+        await config.set("users", tempUsers);
 
         return ApiSuccess(res);
       }
@@ -107,7 +107,7 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
 
         Object.keys(tempUsers).forEach((user) => (tempUsers[user].enabled = false));
 
-        await config.set("SB_USERS", tempUsers);
+        await config.set("users", tempUsers);
 
         return ApiSuccess(res);
       }

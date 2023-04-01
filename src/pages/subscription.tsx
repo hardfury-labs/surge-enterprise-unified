@@ -13,7 +13,7 @@ import { DataTable, TableMeta } from "@/components/table";
 import { PostDataOptions, useStore } from "@/store";
 import { ApiSubscriptionMethod } from "@/types/api";
 import { SubscriptionInfo } from "@/types/subscription";
-import { desc2Hump } from "@/utils";
+import { descToHump } from "@/utils";
 
 const Subscription = () => {
   const config = useStore((state) => state.config);
@@ -23,7 +23,7 @@ const Subscription = () => {
   );
 
   const loadings = useStore((state) => state.loadings);
-  const isLoading = useCallback((name: string) => get(loadings, `subscription.${desc2Hump(name)}`, false), [loadings]);
+  const isLoading = useCallback((name: string) => get(loadings, `subscription.${descToHump(name)}`, false), [loadings]);
 
   const [isModalOpen, { on: openModal, off: closeModal }] = useBoolean();
   const { control, handleSubmit, reset } = useForm<Required<SubscriptionInfo>>({

@@ -3,7 +3,7 @@ import { Card, CardBody, Grid, GridItem, Stat, StatLabel, StatNumber, Text } fro
 
 import { Breadcrumb, Container, Warning } from "@/components/chakra";
 import { useStore } from "@/store";
-import { hump2Desc } from "@/utils";
+import { humpToDesc } from "@/utils";
 
 const Index = () => {
   const config = useStore((state) => state.config);
@@ -44,7 +44,7 @@ const Index = () => {
                 <Card>
                   <CardBody>
                     <Stat>
-                      <StatLabel>{hump2Desc(key)}</StatLabel>
+                      <StatLabel>{humpToDesc(key)}</StatLabel>
                       <StatNumber>{value}</StatNumber>
                     </Stat>
                   </CardBody>

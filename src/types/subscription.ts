@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const SubscriptionSchema = z.object({
-  url: z.string(),
+  url: z.string().url(),
   type: z.string(),
   udpRelay: z.boolean().optional(),
   enabled: z.boolean().optional(),
