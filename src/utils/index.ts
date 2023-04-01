@@ -3,12 +3,6 @@ import { z } from "zod";
 
 export const sleep = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const isDefined = (value: unknown) => {
-  if (value === null || value === undefined) return false;
-
-  return true;
-};
-
 export const formatZodErrors = (errors: z.ZodError) => {
   // TODO add [] for index
   return errors.issues.map((issue) => `${issue.path.join(".")} ${issue.message.toLowerCase()}`);
@@ -37,3 +31,7 @@ export const toEnvKey = (str: string) => {
 };
 
 export const descToHump = (str: string) => lowerFirst(str.replace(/\s+/g, ""));
+
+export const objectToMap = <T>(obj: Record<string, T>) => new Map(Object.entries(obj));
+
+export const mapToObject = <T>(map: Map<string, T>) => Object.fromEntries(map.entries());

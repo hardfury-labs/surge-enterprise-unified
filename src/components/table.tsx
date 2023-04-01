@@ -58,7 +58,6 @@ export const DataTable = <Data extends object>({ data, columns, extraHeaders }: 
                     handler && handler(event);
                   }}
                   isNumeric={meta.isNumeric}
-                  {...(meta.sortable && { display: "flex" })}
                   {...meta.thProps}
                 >
                   <Box {...(meta.sortable && { display: "flex", alignItems: "center", cursor: "pointer" })}>

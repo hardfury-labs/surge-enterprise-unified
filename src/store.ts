@@ -7,7 +7,7 @@ import { immer } from "zustand/middleware/immer";
 import { fetchApi } from "@/fetchers/api";
 import { ApiResponse } from "@/types/api";
 import { Configuration } from "@/types/configuration";
-import { desc2Hump } from "@/utils";
+import { descToHump } from "@/utils";
 
 export interface PostDataOptions {
   description: string;
@@ -85,7 +85,7 @@ export const useStore = create<State>()(
         }: PostDataOptions,
       ) => {
         let key = loadingKey ?? description;
-        key = desc2Hump(key);
+        key = descToHump(key);
         if (loadingKeyPrefix) key = `${loadingKeyPrefix}.${key}`;
 
         get().startLoading(key);

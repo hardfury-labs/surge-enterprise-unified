@@ -16,4 +16,10 @@ export interface SubscriptionInfo extends Subscription {
 }
 export type SubscriptionArray = SubscriptionInfo[];
 
+export interface SubscriptionCache {
+  status?: number;
+  data?: string;
+}
+export type SubscriptionCacheRecord = Record<string, SubscriptionCache>;
+
 // https://manual.nssurge.com/policy/proxy.html

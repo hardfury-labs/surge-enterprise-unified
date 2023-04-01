@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { DEFAULT_PASSWORD } from "@/constants";
 import { Configuration, DataStorageType, DataStorageUri, Env } from "@/types/configuration";
-import { SubscriptionRecord, SubscriptionRecordSchema } from "@/types/subscription";
+import { SubscriptionCacheRecord, SubscriptionRecord, SubscriptionRecordSchema } from "@/types/subscription";
 import { UserRecord, UserRecordSchema } from "@/types/user";
 import { formatZodErrors, toEnvKey } from "@/utils";
 
@@ -29,7 +29,7 @@ const jsonParse = <TSchema extends z.ZodSchema>(env: Env, key: string, schema: T
 };
 
 let redis: Redis | null = null;
-const dbKeys = ["users", "subscriptions", "template", "seApiToken"];
+const dbKeys = ["users", "subscriptions", "subscriptionCaches", "template", "seApiToken"];
 const dbEnvKeys = dbKeys.map((key) => toEnvKey(key));
 
 export class Config implements Configuration {
@@ -42,6 +42,7 @@ export class Config implements Configuration {
   // from data storage
   public users: UserRecord;
   public subscriptions: SubscriptionRecord;
+  public subscriptionCaches: SubscriptionCacheRecord;
   public subscriptionTypes: string[];
   public template: string;
   public seApiToken?: string;
@@ -54,6 +55,7 @@ export class Config implements Configuration {
     password,
     users,
     subscriptions,
+    subscriptionCaches,
     subscriptionTypes,
     template,
     seApiToken,
@@ -67,6 +69,7 @@ export class Config implements Configuration {
     this.users = users;
 
     this.subscriptions = subscriptions;
+    this.subscriptionCaches = subscriptionCaches;
     this.subscriptionTypes = subscriptionTypes;
 
     this.template = template;
@@ -83,6 +86,7 @@ export class Config implements Configuration {
       password: this.password,
       users: this.users,
       subscriptions: this.subscriptions,
+      subscriptionCaches: this.subscriptionCaches,
       subscriptionTypes: this.subscriptionTypes,
       template: this.template,
       seApiToken: this.seApiToken,
@@ -175,6 +179,7 @@ export class Config implements Configuration {
         password: DEFAULT_PASSWORD,
         users: {},
         subscriptions: {},
+        subscriptionCaches: {},
         subscriptionTypes: ["shadowsocks_subscribe", "shadowsocks_json_subscribe", "surge", "clash"],
         template: "",
       }, // default

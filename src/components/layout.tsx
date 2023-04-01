@@ -13,7 +13,9 @@ import { useStore } from "@/store";
 
 const Title = (props: FlexProps) => (
   <Flex as="header" h={16} px={6} alignItems="center" {...props}>
-    <Heading size="md">Surge Balancer</Heading>
+    <Heading size="md" whiteSpace="nowrap">
+      Surge Balancer
+    </Heading>
   </Flex>
 );
 
@@ -69,9 +71,11 @@ const Menu = ({ info: { name, subRoutes, icon }, ...props }: BoxProps & { info: 
         <Icon ml={2} mt="1px" as={FiChevronDown} />
       </Flex>
       <Collapse in={true} animateOpacity>
-        {subRoutes?.map((info) => (
-          <NavLink key={info.name} ml={4} info={info} />
-        ))}
+        <SimpleGrid column={1} spacing={2}>
+          {subRoutes?.map((info) => (
+            <NavLink key={info.name} ml={4} info={info} />
+          ))}
+        </SimpleGrid>
       </Collapse>
     </>
   );

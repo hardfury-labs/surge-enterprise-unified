@@ -115,6 +115,16 @@ const Subscription = () => {
         return (
           <ButtonGroup>
             <WritableButton
+              tooltipProps={{ actionName: "Check Subscription" }}
+              size="xs"
+              colorScheme="blue"
+              isLoading={isLoading(description)}
+              isDisabled={isLoading(description)}
+              onClick={() => postData("editSubscriptions", { description, data: { subscriptions: { [name]: null } } })}
+            >
+              Check
+            </WritableButton>
+            <WritableButton
               tooltipProps={{ actionName: "Delete Subscription" }}
               size="xs"
               colorScheme="red"

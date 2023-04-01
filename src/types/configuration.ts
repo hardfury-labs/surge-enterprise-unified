@@ -1,4 +1,4 @@
-import { SubscriptionRecord } from "./subscription";
+import { SubscriptionCacheRecord, SubscriptionRecord } from "./subscription";
 import { UserRecord } from "./user";
 
 export type EnvValue = string | null | undefined;
@@ -19,6 +19,7 @@ export interface Configuration {
   // from data storage
   users: UserRecord;
   subscriptions: SubscriptionRecord;
+  subscriptionCaches: SubscriptionCacheRecord;
   subscriptionTypes: string[];
   template: string;
   seApiToken?: string;
