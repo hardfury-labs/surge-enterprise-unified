@@ -5,7 +5,7 @@ import {
 import { GroupBase, OptionBase, Props as SelectProps, Select } from "chakra-react-select";
 import { SetRequired } from "type-fest";
 
-import { PssswordInput } from "./chakra";
+import { PssswordInput, PssswordInputProps } from "./chakra";
 
 interface FormLabelType<TFieldValues> {
   label: string;
@@ -55,7 +55,7 @@ export const FormPasswordInput = <TFieldValues extends FieldValues>({
   ...props
 }: FormLabelType<TFieldValues> &
   SetRequired<Omit<UseControllerProps<TFieldValues>, "name">, "control"> &
-  InputProps) => {
+  PssswordInputProps) => {
   const {
     field: { value, onChange },
     fieldState: { error },

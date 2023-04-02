@@ -8,13 +8,13 @@ import {
 
 import { useStore } from "@/store";
 
-export const PssswordInput = ({
-  inputGroupProps,
-  ...props
-}: {
+export type PssswordInputProps = InputProps & {
+  showPassword?: boolean;
   inputGroupProps?: InputGroupProps;
-} & InputProps) => {
-  const [isShowing, { toggle }] = useBoolean(false);
+};
+
+export const PssswordInput = ({ showPassword = false, inputGroupProps, ...props }: PssswordInputProps) => {
+  const [isShowing, { toggle }] = useBoolean(showPassword);
 
   return (
     <InputGroup {...inputGroupProps}>

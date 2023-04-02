@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { ButtonGroup, Card, CardBody, SimpleGrid, Text, Th, Tr, useBoolean } from "@chakra-ui/react";
+import { ButtonGroup, Card, CardBody, SimpleGrid, Text, Th, Tr, useDisclosure } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { get, omit } from "lodash";
+import { get } from "lodash";
 
 import { Breadcrumb, Container, WritableButton, WritableSwitch } from "@/components/chakra";
 import { FormInput, FormSelect, FormSwitch } from "@/components/form";
@@ -27,7 +27,6 @@ const Subscription = () => {
   const loadings = useStore((state) => state.loadings);
   const isLoading = useCallback((name: string) => get(loadings, `subscription.${descToHump(name)}`, false), [loadings]);
 
-  const [isModalOpen, { on: openModal, off: closeModal }] = useBoolean();
   const { control, handleSubmit, reset } = useForm<Required<SubscriptionInfo>>({
     defaultValues: {
       name: "",
@@ -38,6 +37,7 @@ const Subscription = () => {
     },
     shouldFocusError: false,
   });
+  const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure({ onClose: reset });
 
   const columnHelper = createColumnHelper<SubscriptionInfo>();
   const columns = [
@@ -213,20 +213,14 @@ const Subscription = () => {
       <CreateModal
         title="Add New Subscription"
         isOpen={isModalOpen}
-        onClose={() => {
-          closeModal();
-          reset();
-        }}
+        onClose={closeModal}
         isLoading={isLoading("Add New Subscription")}
         onSubmit={handleSubmit((info) =>
           postData("editSubscriptions", {
             description: `Add New Subscription ${info.name}`,
             loadingKey: "Add New Subscription",
-            data: { subscriptions: { [info.name]: omit(info, "name") } },
-            successCallback: () => {
-              reset();
-              closeModal();
-            },
+            data: { subscriptions: { [info.name]: info } },
+            successCallback: closeModal,
           }),
         )}
       >
@@ -257,7 +251,7 @@ const Subscription = () => {
             <DataTable
               columns={columns}
               extraHeaders={extraHeaders}
-              data={Object.entries(config.subscriptions || {}).map(([name, info]) => ({ name, ...info })) || []}
+              data={Object.entries(config.subscriptions).map(([name, info]) => ({ name, ...info }))}
             />
           </CardBody>
         </Card>

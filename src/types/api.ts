@@ -44,7 +44,7 @@ export const ApiUserDTO = {
   editUsers: z.object({
     body: z.object({
       method: z.literal("editUsers"),
-      users: z.record(z.string({ description: "username" }), UserSchema.nullable()),
+      users: z.record(z.string({ description: "username" }), UserSchema.strip().nullable()),
     }),
   }),
 };
@@ -70,7 +70,7 @@ export const ApiSubscriptionDTO = {
   editSubscriptions: z.object({
     body: z.object({
       method: z.literal("editSubscriptions"),
-      subscriptions: z.record(z.string({ description: "name" }), SubscriptionSchema.nullable()),
+      subscriptions: z.record(z.string({ description: "name" }), SubscriptionSchema.strip().nullable()),
     }),
   }),
 

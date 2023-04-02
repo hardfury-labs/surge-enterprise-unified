@@ -1,8 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ButtonGroup, Card, CardBody, SimpleGrid, Th, Tr, useBoolean } from "@chakra-ui/react";
+import { ButtonGroup, Card, CardBody, SimpleGrid, Th, Tr, useDisclosure } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { get, omit } from "lodash";
+import { get } from "lodash";
 
 import { Breadcrumb, Container, WritableButton, WritableSwitch } from "@/components/chakra";
 import { FormInput, FormPasswordInput, FormSwitch } from "@/components/form";
@@ -23,14 +23,25 @@ const User = () => {
   const loadings = useStore((state) => state.loadings);
   const isLoading = useCallback((name: string) => get(loadings, `user.${descToHump(name)}`, false), [loadings]);
 
-  const [isModalOpen, { on: openModal, off: closeModal }] = useBoolean();
+  const defaultUserInfo = {
+    username: "",
+    passcode: "",
+    enabled: true,
+  };
+  const [modalTitle, setModalTitle] = useState("Add New User");
   const { control, handleSubmit, reset } = useForm<Required<UserInfo>>({
-    defaultValues: {
-      username: "",
-      passcode: "",
-      enabled: true,
-    },
+    defaultValues: defaultUserInfo,
     shouldFocusError: false,
+  });
+  const {
+    isOpen: isModalOpen,
+    onOpen: openModal,
+    onClose: closeModal,
+  } = useDisclosure({
+    onClose: () => {
+      reset(defaultUserInfo);
+      setModalTitle("Add New User");
+    },
   });
 
   const columnHelper = createColumnHelper<UserInfo>();
@@ -81,10 +92,24 @@ const User = () => {
       cell: (cellInfo) => {
         const username = cellInfo.row.getValue<string>("username");
 
+        const info = cellInfo.row._valuesCache;
+
         const description = `Delete User ${username}`;
 
         return (
           <ButtonGroup>
+            <WritableButton
+              tooltipProps={{ actionName: "Edit User" }}
+              size="xs"
+              variant="black-ghost"
+              onClick={() => {
+                reset(info);
+                setModalTitle("Edit User");
+                openModal();
+              }}
+            >
+              Edit
+            </WritableButton>
             <WritableButton
               tooltipProps={{ actionName: "Delete User" }}
               size="xs"
@@ -138,28 +163,28 @@ const User = () => {
       <Breadcrumb title="User" />
 
       <CreateModal
-        title="Add New User"
+        title={modalTitle}
         isOpen={isModalOpen}
-        onClose={() => {
-          closeModal();
-          reset();
-        }}
-        isLoading={isLoading("Add New User")}
+        onClose={closeModal}
+        isLoading={isLoading(modalTitle)}
         onSubmit={handleSubmit((info) =>
           postData("editUsers", {
-            description: `Add New User ${info.username}`,
-            loadingKey: "Add New User",
-            data: { users: { [info.username]: omit(info, "username") } },
-            successCallback: () => {
-              reset();
-              closeModal();
-            },
+            description: `${modalTitle} ${info.username}`,
+            loadingKey: modalTitle,
+            data: { users: { [info.username]: info } },
+            successCallback: closeModal,
           }),
         )}
       >
         <SimpleGrid column={1} spacing={1}>
           <FormInput<Required<UserInfo>> label="Username" id="username" required control={control} />
-          <FormPasswordInput<Required<UserInfo>> label="Passcode" id="passcode" required control={control} />
+          <FormPasswordInput<Required<UserInfo>>
+            label="Passcode"
+            id="passcode"
+            required
+            showPassword
+            control={control}
+          />
           <FormSwitch<Required<UserInfo>> label="Enabled" id="enabled" control={control} />
         </SimpleGrid>
       </CreateModal>
@@ -190,7 +215,7 @@ const User = () => {
             <DataTable
               columns={columns}
               extraHeaders={extraHeaders}
-              data={Object.entries(config.users || {}).map(([username, info]) => ({ username, ...info })) || []}
+              data={Object.entries(config.users).map(([username, info]) => ({ username, ...info }))}
             />
           </CardBody>
         </Card>
