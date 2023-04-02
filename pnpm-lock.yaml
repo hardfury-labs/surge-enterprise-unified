@@ -17,6 +17,7 @@ specifiers:
   chakra-react-select: ^4.6.0
   cookies-next: ^2.1.1
   crypto-js: ^4.1.1
+  dayjs: ^1.11.7
   eslint: ^8.36.0
   eslint-config-next: ^13.2.4
   framer-motion: ^6.5.1
@@ -49,6 +50,7 @@ dependencies:
   chakra-react-select: 4.6.0_emzm5s4qyz2ist7kw4pltyley4
   cookies-next: 2.1.1
   crypto-js: 4.1.1
+  dayjs: 1.11.7
   framer-motion: 6.5.1_biqbaboplfbrettd7655fr4n2y
   immer: 9.0.21
   ioredis: 5.3.1
@@ -3210,6 +3212,10 @@ packages:
 
   /dateformat/2.2.0:
     resolution: {integrity: sha512-GODcnWq3YGoTnygPfi02ygEiRxqUxpJwuRHjdhJYuxpcZmDq4rjBiXYmbCCzStxo176ixfLT6i4NPwQooRySnw==}
+    dev: false
+
+  /dayjs/1.11.7:
+    resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
     dev: false
 
   /debug/2.6.9:

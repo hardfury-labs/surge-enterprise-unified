@@ -28,7 +28,7 @@ export type SubscriptionArray = SubscriptionInfo[];
 export const SubscriptionCacheSchema = z
   .object({
     body: z.string(),
-    updated: z.number(),
+    updatedAt: z.number(),
     nodeCount: z.number(),
   })
   .strict();

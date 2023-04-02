@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import {
-  ButtonGroup, Card, CardBody, Input, SimpleGrid, Switch, Th, Tr, useBoolean, useDisclosure,
-} from "@chakra-ui/react";
+import { ButtonGroup, Card, CardBody, SimpleGrid, Text, Th, Tr, useBoolean } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { get, omit } from "lodash";
 
 import { Breadcrumb, Container, WritableButton, WritableSwitch } from "@/components/chakra";
@@ -14,6 +14,8 @@ import { PostDataOptions, useStore } from "@/store";
 import { ApiSubscriptionMethod } from "@/types/api";
 import { SubscriptionInfo } from "@/types/subscription";
 import { descToHump } from "@/utils";
+
+dayjs.extend(relativeTime);
 
 const Subscription = () => {
   const config = useStore((state) => state.config);
@@ -42,12 +44,16 @@ const Subscription = () => {
     columnHelper.accessor("name", {
       meta: {
         sortable: true,
+        tdProps: { whiteSpace: "nowrap" },
       } as TableMeta,
     }),
     columnHelper.accessor("url", {}),
-    columnHelper.accessor("type", {}),
+    columnHelper.accessor("type", {
+      meta: { tdProps: { whiteSpace: "nowrap" } } as TableMeta,
+    }),
     columnHelper.accessor("udpRelay", {
       header: "UDP Relay",
+      meta: { tdProps: { whiteSpace: "nowrap" } } as TableMeta,
       cell: (cellInfo) => {
         const udpRelay = cellInfo.getValue();
 
@@ -75,15 +81,29 @@ const Subscription = () => {
     }),
     columnHelper.accessor(() => {}, {
       header: "nodes",
+      meta: { tdProps: { whiteSpace: "nowrap" } } as TableMeta,
       cell: (cellInfo) => {
         const name = cellInfo.row.getValue<string>("name");
 
         const cache = get(config.subscriptionCaches, name);
 
-        return cache ? cache.nodeCount : "-";
+        return cache ? (
+          <>
+            <Text>{cache.nodeCount}</Text>
+            <Text fontSize="xs" color="gray.400">
+              {dayjs(cache.updatedAt).fromNow()}
+            </Text>
+          </>
+        ) : (
+          "-"
+        );
       },
     }),
     columnHelper.accessor("enabled", {
+      meta: {
+        isNumeric: true,
+        tdProps: { whiteSpace: "nowrap" },
+      } as TableMeta,
       cell: (cellInfo) => {
         const enabled = cellInfo.getValue();
 
@@ -106,12 +126,13 @@ const Subscription = () => {
           />
         );
       },
-      meta: {
-        isNumeric: true,
-      } as TableMeta,
     }),
     columnHelper.accessor(() => {}, {
       header: "actions",
+      meta: {
+        isNumeric: true,
+        tdProps: { whiteSpace: "nowrap" },
+      } as TableMeta,
       cell: (info) => {
         const name: string = info.row.getValue("name");
 
@@ -150,9 +171,6 @@ const Subscription = () => {
           </ButtonGroup>
         );
       },
-      meta: {
-        isNumeric: true,
-      } as TableMeta,
     }),
   ];
   const extraHeaders = (

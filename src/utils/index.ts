@@ -3,8 +3,6 @@ import { z } from "zod";
 
 export const sleep = async (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const getMs = () => new Date().getTime();
-
 export const formatZodErrors = (errors: z.ZodError) => {
   // TODO add [] for index
   return errors.issues.map((issue) => `${issue.path.join(".")} ${issue.message.toLowerCase()}`);

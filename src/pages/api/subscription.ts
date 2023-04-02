@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
 import Bluebird from "bluebird";
+import dayjs from "dayjs";
 import { get } from "lodash";
 import { z } from "zod";
 
@@ -75,7 +76,11 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
             const parser = get(subscriptionParsers, info.type);
             const { nodeList } = parser(response, info);
 
-            dbSubscriptionCaches.set(name, { body: response.data, updated: 1, nodeCount: nodeList.length });
+            dbSubscriptionCaches.set(name, {
+              body: response.data,
+              updatedAt: dayjs().valueOf(),
+              nodeCount: nodeList.length,
+            });
           },
           {
             concurrency: 5,

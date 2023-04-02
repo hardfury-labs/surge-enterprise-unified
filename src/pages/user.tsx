@@ -38,10 +38,17 @@ const User = () => {
     columnHelper.accessor("username", {
       meta: {
         sortable: true,
+        tdProps: { whiteSpace: "nowrap" },
       } as TableMeta,
     }),
-    columnHelper.accessor("passcode", {}),
+    columnHelper.accessor("passcode", {
+      meta: { tdProps: { whiteSpace: "nowrap" } } as TableMeta,
+    }),
     columnHelper.accessor("enabled", {
+      meta: {
+        isNumeric: true,
+        tdProps: { whiteSpace: "nowrap" },
+      } as TableMeta,
       cell: (cellInfo) => {
         const enabled = cellInfo.getValue();
 
@@ -64,12 +71,13 @@ const User = () => {
           />
         );
       },
-      meta: {
-        isNumeric: true,
-      } as TableMeta,
     }),
     columnHelper.accessor(() => {}, {
       header: "actions",
+      meta: {
+        isNumeric: true,
+        tdProps: { whiteSpace: "nowrap" },
+      } as TableMeta,
       cell: (cellInfo) => {
         const username = cellInfo.row.getValue<string>("username");
 
@@ -90,9 +98,6 @@ const User = () => {
           </ButtonGroup>
         );
       },
-      meta: {
-        isNumeric: true,
-      } as TableMeta,
     }),
   ];
   const extraHeaders = (

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 import {
-  Box, Flex, FlexProps, Icon, Table, TableColumnHeaderProps, TableRowProps, Tbody, Td, Th, Thead, Tr,
+  Box, Flex, FlexProps, Icon, Table, TableCellProps, TableColumnHeaderProps, Tbody, Td, Th, Thead, Tr,
 } from "@chakra-ui/react";
 import {
   ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortDirection, SortingState, useReactTable,
@@ -17,7 +17,7 @@ export interface TableMeta {
   sortable?: boolean;
   isNumeric?: boolean;
   thProps?: TableColumnHeaderProps;
-  trProps?: TableRowProps;
+  tdProps?: TableCellProps;
 }
 
 const SortIndicator = ({ sorted, ...props }: FlexProps & { sorted?: false | SortDirection }) => (
@@ -80,7 +80,7 @@ export const DataTable = <Data extends object>({ data, columns, extraHeaders }: 
               const meta: TableMeta = cell.column.columnDef.meta || {};
 
               return (
-                <Td key={cell.id} isNumeric={meta.isNumeric}>
+                <Td key={cell.id} isNumeric={meta.isNumeric} {...meta.tdProps}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </Td>
               );
