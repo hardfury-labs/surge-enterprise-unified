@@ -49,16 +49,12 @@ export const Warning = ({ children, ...props }: CardProps) => (
   </Card>
 );
 
-type WritableTipProps = Omit<TooltipProps, "children"> & { description?: string; actionName: string };
+type WritableTipProps = TooltipProps & { actionName: string; description?: string; isShow?: boolean };
 
-const WritableTip = ({
-  description,
-  actionName,
-  ...props
-}: TooltipProps & { description?: string; actionName: string }) => {
+const WritableTip = ({ actionName, description, isShow = false, ...props }: WritableTipProps) => {
   const config = useStore((state) => state.config);
 
-  return !config.features.writable ? (
+  return isShow || !config.features.writable ? (
     <ChakraTooltip
       label={description ? description : `The ${actionName} cannot be used in ${config.dataStorageType} datastore`}
       {...props}
@@ -73,7 +69,7 @@ export const WritableButton = ({
   isDisabled,
   ...props
 }: {
-  tooltipProps: WritableTipProps;
+  tooltipProps: Omit<WritableTipProps, "children">;
 } & ButtonProps) => {
   const config = useStore((state) => state.config);
 
@@ -92,7 +88,7 @@ export const WritableSwitch = ({
   tooltipProps,
   isDisabled,
   ...props
-}: { tooltipProps: WritableTipProps } & SwitchProps) => {
+}: { tooltipProps: Omit<WritableTipProps, "children"> } & SwitchProps) => {
   const config = useStore((state) => state.config);
 
   return (

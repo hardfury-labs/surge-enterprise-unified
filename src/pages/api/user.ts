@@ -1,12 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
-import { pick } from "lodash";
 import { z } from "zod";
 
 import { Config } from "@/configuration";
 import { fetchSEApi, SEApiUsersData } from "@/fetchers/surge";
 import { ApiUserDTO } from "@/types/api";
-import { User, UserSchema } from "@/types/user";
 import { mapToObject, objectToMap } from "@/utils";
 import { ApiError, ApiSuccess, authorize, ncApiOptions, validate } from "@/utils/api";
 
@@ -53,6 +51,9 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
       }
 
       case "editUsers": {
+        // ! only pick specific fields to prevent data injection
+        // ! zod's .strict() will check and throw an error if any unknown fields exists
+        // .strict().shape return all keys
         validate(req, res, ApiUserDTO.editUsers);
 
         const config = await Config.load();
@@ -67,18 +68,15 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
           // if user doesn't exist
           if (!oldInfo) {
             // and newInfo is not null, create new user
-            // !only pick specific fields to prevent data injection
-            if (newInfo) dbUsers.set(username, pick(newInfo, Object.keys(UserSchema.strict().shape)) as User);
+            if (newInfo) dbUsers.set(username, newInfo);
             else ApiError(403, `User ${username} doesn't exist`);
           }
-
           // if user exists
           else {
             // and newInfo is null, delete user
             if (!newInfo) dbUsers.delete(username);
             // and newInfo is not null, update user
-            // !only pick specific fields to prevent data injection
-            else dbUsers.set(username, { ...oldInfo, ...pick(newInfo, Object.keys(UserSchema.strict().shape)) });
+            else dbUsers.set(username, { ...oldInfo, ...newInfo });
           }
         });
 

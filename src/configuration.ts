@@ -1,38 +1,62 @@
 import IORedis, { Redis } from "ioredis";
-import { get, merge } from "lodash";
-import type { SetRequired } from "type-fest";
+import { get, merge, set } from "lodash";
+import type { SetRequired, StringKeyOf } from "type-fest";
 import { z } from "zod";
 
 import { DEFAULT_PASSWORD } from "@/constants";
-import { Configuration, DataStorageType, DataStorageUri, Env } from "@/types/configuration";
+import { Configuration, DataStorageType, DataStorageUri, Env, SeApiTokenSchema } from "@/types/configuration";
 import {
   SubscriptionCacheRecord, SubscriptionCacheRecordSchema, SubscriptionRecord, SubscriptionRecordSchema,
 } from "@/types/subscription";
 import { UserRecord, UserRecordSchema } from "@/types/user";
 import { formatZodErrors, toEnvKey } from "@/utils";
 
-const jsonParse = <TSchema extends z.ZodSchema>(env: Env, key: string, schema: TSchema) => {
-  const errors: string[] = [];
-  let data;
-  // The upper level function has judged
-  const value = get(env, key) as string;
+type Parser<TSchema extends z.ZodSchema> = (
+  key: string,
+  value: string,
+  schema: TSchema,
+) => { errors: string[]; data?: z.infer<TSchema> };
 
-  try {
-    const json = JSON.parse(value);
-    const result = schema.safeParse(json);
+const parsers = {
+  json: <TSchema extends z.ZodSchema>(key: string, value: string, schema: TSchema) => {
+    const errors: string[] = [];
+    let data;
+
+    try {
+      const json = JSON.parse(value);
+      const result = schema.safeParse(json);
+
+      if (!result.success) errors.push(`[${key}] ${formatZodErrors(result.error).join(", ")}`);
+      else data = result.data as z.infer<TSchema>;
+    } catch (error) {
+      errors.push(`[${key}] Invalid JSON string`);
+    }
+
+    return { errors, data };
+  },
+
+  string: <TSchema extends z.ZodSchema>(key: string, value: string, schema: TSchema) => {
+    const errors: string[] = [];
+    let data;
+
+    const result = schema.safeParse(value);
 
     if (!result.success) errors.push(`[${key}] ${formatZodErrors(result.error).join(", ")}`);
     else data = result.data as z.infer<TSchema>;
-  } catch (error) {
-    errors.push(`[${key}] Invalid JSON string`);
-  }
 
-  return { errors, data };
+    return { errors, data };
+  },
 };
 
 let redis: Redis | null = null;
-const dbKeys = ["users", "subscriptions", "subscriptionCaches", "template", "seApiToken"];
-const dbEnvKeys = dbKeys.map((key) => toEnvKey(key));
+
+const dbSchemas = {
+  users: { schema: UserRecordSchema, type: "json" },
+  subscriptions: { schema: SubscriptionRecordSchema, type: "json" },
+  subscriptionCaches: { schema: SubscriptionCacheRecordSchema, type: "json" },
+  // template: { schema: z.string(), type: "string" },
+  seApiToken: { schema: SeApiTokenSchema, type: "string" },
+};
 
 export class Config implements Configuration {
   // from env and cannot be changed
@@ -132,12 +156,13 @@ export class Config implements Configuration {
       env = process.env;
       configuration.dataStorageType = "env";
     }
-
     // get configuration from redis
     else if (dataStorageUri.startsWith("redis://") || dataStorageUri.startsWith("rediss://")) {
       try {
         redis = this.getRedisInstance(dataStorageUri) as Redis;
         if (!["connecting", "connect", "ready"].includes(redis.status)) await redis.connect();
+
+        const dbEnvKeys = Object.keys(dbSchemas).map((key) => toEnvKey(key));
 
         // mget or hmget
         // mget allows data to be displayed more clearly in the browser
@@ -153,34 +178,21 @@ export class Config implements Configuration {
         configuration.warnings.push(`[SB_DATASTORAGE] Failed to connect to Redis: ${(error as Error).message}`);
       }
     }
-
     // unknown data storage
     else configuration.warnings.push(`[SB_DATASTORAGE] Invalid value: ${dataStorageUri}`);
 
-    if (env.SB_USERS) {
-      const { errors, data } = jsonParse(env, "SB_USERS", UserRecordSchema);
+    Object.entries(dbSchemas).forEach(([key, { schema, type }]) => {
+      const envKey = toEnvKey(key);
+      const value = get(env, envKey);
 
-      if (data) configuration.users = data;
-      if (errors.length > 0) configuration.warnings.push(...errors);
-    }
+      if (value) {
+        const parser: Parser<typeof schema> = get(parsers, type);
+        const { errors, data } = parser(envKey, value, schema);
 
-    if (env.SB_SUBSCRIPTIONS) {
-      const { errors, data } = jsonParse(env, "SB_SUBSCRIPTIONS", SubscriptionRecordSchema);
-
-      if (data) configuration.subscriptions = data;
-      if (errors.length > 0) configuration.warnings.push(...errors);
-    }
-
-    if (env.SB_SUBSCRIPTION_CACHES) {
-      const { errors, data } = jsonParse(env, "SB_SUBSCRIPTION_CACHES", SubscriptionCacheRecordSchema);
-
-      if (data) configuration.subscriptionCaches = data;
-      if (errors.length > 0) configuration.warnings.push(...errors);
-    }
-
-    if (env.SB_TEMPLATE) configuration.template = env.SB_TEMPLATE;
-
-    if (env.SB_SE_API_TOKEN) configuration.seApiToken = env.SB_SE_API_TOKEN;
+        if (data) set(configuration, key, data);
+        if (errors.length > 0) configuration.warnings.push(...errors);
+      }
+    });
 
     const config: Configuration = merge(
       {
@@ -200,7 +212,7 @@ export class Config implements Configuration {
     return new Config(config);
   }
 
-  async set(key: "users" | "subscriptions" | "subscriptionCaches" | "template" | "seApiToken", value: any) {
+  async set(key: StringKeyOf<typeof dbSchemas>, value: any) {
     // env
     if (this.dataStorageType === "env") throw new Error("Cannot set configuration in env data storage");
     // redis

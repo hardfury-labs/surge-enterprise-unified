@@ -1,13 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
 import Bluebird from "bluebird";
-import { get, pick } from "lodash";
+import { get } from "lodash";
 import { z } from "zod";
 
 import { Config } from "@/configuration";
 import { fetchSubscription } from "@/fetchers/subscription";
 import { ApiSubscriptionDTO } from "@/types/api";
-import { Subscription, SubscriptionSchema } from "@/types/subscription";
 import { mapToObject, objectToMap } from "@/utils";
 import { ApiError, ApiSuccess, authorize, ncApiOptions, validate } from "@/utils/api";
 import { subscriptionParsers } from "@/utils/surgio";
@@ -21,6 +20,9 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
 
     switch (method) {
       case "editSubscriptions": {
+        // ! only pick specific fields to prevent data injection
+        // ! zod's .strict() will check and throw an error if any unknown fields exists
+        // .strict().shape return all keys
         validate(req, res, ApiSubscriptionDTO.editSubscriptions);
 
         const config = await Config.load();
@@ -35,23 +37,15 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
           // if subscription doesn't exist
           if (!oldInfo) {
             // and newInfo is not null, create new subscription
-            // !only pick specific fields to prevent data injection
-            if (newInfo)
-              dbSubscriptions.set(name, pick(newInfo, Object.keys(SubscriptionSchema.strict().shape)) as Subscription);
+            if (newInfo) dbSubscriptions.set(name, newInfo);
             else ApiError(403, `Subscription ${name} doesn't exist`);
           }
-
           // if subscription exists
           else {
             // and newInfo is null, delete subscription
             if (!newInfo) dbSubscriptions.delete(name);
             // and newInfo is not null, update subscription
-            // !only pick specific fields to prevent data injection
-            else
-              dbSubscriptions.set(name, {
-                ...oldInfo,
-                ...pick(newInfo, Object.keys(SubscriptionSchema.strict().shape)),
-              });
+            else dbSubscriptions.set(name, { ...oldInfo, ...newInfo });
           }
         });
 

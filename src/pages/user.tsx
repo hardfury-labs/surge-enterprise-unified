@@ -169,6 +169,7 @@ const User = () => {
             tooltipProps={{
               actionName: "Sync Users",
               description: !config.seApiToken ? "Surge Enterprise Api Token not set" : "",
+              isShow: !config.seApiToken,
             }}
             variant="black-ghost"
             isLoading={isLoading("Sync Users")}

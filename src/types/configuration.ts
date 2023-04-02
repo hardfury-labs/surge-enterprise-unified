@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import { SubscriptionCacheRecord, SubscriptionRecord } from "./subscription";
 import { UserRecord } from "./user";
 
@@ -7,6 +9,9 @@ export type Env = Record<string, EnvValue>;
 
 export type DataStorageType = "env" | "redis";
 export type DataStorageUri = "env" | string;
+
+export const SeApiTokenSchema = z.string().uuid();
+export type SeApiToken = z.infer<typeof SeApiTokenSchema>;
 
 export interface Configuration {
   // from env and cannot be changed
@@ -22,5 +27,5 @@ export interface Configuration {
   subscriptionCaches: SubscriptionCacheRecord;
   subscriptionTypes: string[];
   template: string;
-  seApiToken?: string;
+  seApiToken?: SeApiToken;
 }

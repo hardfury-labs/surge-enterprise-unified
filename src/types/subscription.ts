@@ -3,12 +3,14 @@ import { z } from "zod";
 /*
  * Subscription
  */
-export const SubscriptionSchema = z.object({
-  url: z.string().url(),
-  type: z.string(),
-  udpRelay: z.boolean().optional(),
-  enabled: z.boolean().optional(),
-});
+export const SubscriptionSchema = z
+  .object({
+    url: z.string().url(),
+    type: z.string(),
+    udpRelay: z.boolean().optional(),
+    enabled: z.boolean().optional(),
+  })
+  .strict();
 export type Subscription = z.infer<typeof SubscriptionSchema>;
 
 export const SubscriptionRecordSchema = z.record(z.string({ description: "name" }), SubscriptionSchema);
@@ -23,11 +25,13 @@ export type SubscriptionArray = SubscriptionInfo[];
 /*
  * Subscription Cache
  */
-export const SubscriptionCacheSchema = z.object({
-  body: z.string(),
-  updated: z.number(),
-  nodeCount: z.number(),
-});
+export const SubscriptionCacheSchema = z
+  .object({
+    body: z.string(),
+    updated: z.number(),
+    nodeCount: z.number(),
+  })
+  .strict();
 export type SubscriptionCache = z.infer<typeof SubscriptionCacheSchema>;
 
 export const SubscriptionCacheRecordSchema = z.record(z.string({ description: "name" }), SubscriptionCacheSchema);

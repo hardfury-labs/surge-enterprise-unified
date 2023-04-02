@@ -3,10 +3,12 @@ import { z } from "zod";
 /*
  * User
  */
-export const UserSchema = z.object({
-  passcode: z.string(),
-  enabled: z.boolean().optional(),
-});
+export const UserSchema = z
+  .object({
+    passcode: z.string(),
+    enabled: z.boolean().optional(),
+  })
+  .strict();
 export type User = z.infer<typeof UserSchema>;
 
 export const UserRecordSchema = z.record(z.string({ description: "username" }), UserSchema);
