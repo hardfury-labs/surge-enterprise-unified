@@ -64,7 +64,7 @@ const User = () => {
         const enabled = cellInfo.getValue();
 
         const username = cellInfo.row.getValue<string>("username");
-        const info = cellInfo.row._valuesCache;
+        const info = cellInfo.row.original;
 
         const description = enabled ? `Disable User ${username}` : `Enable User ${username}`;
 
@@ -92,7 +92,7 @@ const User = () => {
       cell: (cellInfo) => {
         const username = cellInfo.row.getValue<string>("username");
 
-        const info = cellInfo.row._valuesCache;
+        const info = cellInfo.row.original;
 
         const description = `Delete User ${username}`;
 

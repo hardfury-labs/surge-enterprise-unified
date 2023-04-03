@@ -94,7 +94,7 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
 
         const dbUsers = objectToMap(users);
 
-        dbUsers.forEach((info, user) => dbUsers.set(user, { ...info, enabled: true }));
+        dbUsers.forEach((info, username) => dbUsers.set(username, { ...info, enabled: true }));
 
         await config.set("users", mapToObject(dbUsers));
 
@@ -107,7 +107,7 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
 
         const dbUsers = objectToMap(users);
 
-        dbUsers.forEach((info, user) => dbUsers.set(user, { ...info, enabled: false }));
+        dbUsers.forEach((info, username) => dbUsers.set(username, { ...info, enabled: false }));
 
         await config.set("users", mapToObject(dbUsers));
 

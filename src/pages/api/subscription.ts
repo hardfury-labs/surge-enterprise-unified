@@ -30,6 +30,7 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
         const { subscriptions: postSubscriptions } = (req as z.infer<typeof ApiSubscriptionDTO.editSubscriptions>).body;
 
         const dbSubscriptions = objectToMap(config.subscriptions);
+        const dbSubscriptionCaches = objectToMap(config.subscriptionCaches);
 
         Object.entries(postSubscriptions).forEach(([name, newInfo]) => {
           // find subscription info by name
@@ -39,24 +40,46 @@ const handler = nc<NextApiRequest, NextApiResponse>(ncApiOptions)
           if (!oldInfo) {
             // and newInfo is not null, create new subscription
             if (newInfo)
-              dbSubscriptions.set(name, pick(newInfo, ...Object.keys(SubscriptionSchema.shape)) as Subscription);
+              dbSubscriptions.set(name, {
+                ...(pick(newInfo, ...Object.keys(SubscriptionSchema.shape)) as Subscription),
+                updatedAt: dayjs().valueOf(),
+              });
             else ApiError(403, `Subscription ${name} doesn't exist`);
           }
           // if subscription exists
           else {
             // and newInfo is null, delete subscription
-            if (!newInfo) dbSubscriptions.delete(name);
+            if (!newInfo) {
+              dbSubscriptions.delete(name);
+              dbSubscriptionCaches.delete(name);
+            }
             // and newInfo is not null, update subscription
             // ! only pick specific fields to prevent data injection
             else
               dbSubscriptions.set(name, {
                 ...oldInfo,
                 ...(pick(newInfo, ...Object.keys(SubscriptionSchema.shape)) as Subscription),
+                updatedAt: dayjs().valueOf(),
               });
           }
         });
 
+        // collate indexs
+        const dbSubscriptionsSorted = [...dbSubscriptions.entries()].sort(([aName, aInfo], [bName, bInfo]) => {
+          let a = aInfo.index || dbSubscriptions.size - 1;
+          let b = bInfo.index || dbSubscriptions.size - 1;
+
+          if (aInfo.updatedAt) a -= a * aInfo.updatedAt;
+          if (bInfo.updatedAt) b -= b * bInfo.updatedAt;
+
+          return a - b;
+        });
+        dbSubscriptionsSorted.forEach(([name, info], index) => {
+          dbSubscriptions.set(name, { ...info, index });
+        });
+
         await config.set("subscriptions", mapToObject(dbSubscriptions));
+        await config.set("subscriptionCaches", mapToObject(dbSubscriptionCaches));
 
         return ApiSuccess(res);
       }

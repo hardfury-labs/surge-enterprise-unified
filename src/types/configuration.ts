@@ -10,7 +10,7 @@ export type Env = Record<string, EnvValue>;
 export type DataStorageType = "env" | "redis";
 export type DataStorageUri = "env" | string;
 
-export const SeApiTokenSchema = z.string().uuid();
+export const SeApiTokenSchema = z.string().uuid().trim();
 export type SeApiToken = z.infer<typeof SeApiTokenSchema>;
 
 export interface Configuration {

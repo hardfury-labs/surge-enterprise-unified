@@ -41,6 +41,12 @@ const Subscription = () => {
 
   const columnHelper = createColumnHelper<SubscriptionInfo>();
   const columns = [
+    columnHelper.accessor("index", {
+      meta: {
+        sortable: true,
+        tdProps: { whiteSpace: "nowrap" },
+      } as TableMeta,
+    }),
     columnHelper.accessor("name", {
       meta: {
         sortable: true,
@@ -58,7 +64,7 @@ const Subscription = () => {
         const udpRelay = cellInfo.getValue();
 
         const name = cellInfo.row.getValue<string>("name");
-        const info = cellInfo.row._valuesCache;
+        const info = cellInfo.row.original;
 
         const description = udpRelay
           ? `Disable Subscription ${name} UDP Relay`
@@ -108,7 +114,7 @@ const Subscription = () => {
         const enabled = cellInfo.getValue();
 
         const name = cellInfo.row.getValue<string>("name");
-        const info = cellInfo.row._valuesCache;
+        const info = cellInfo.row.original;
 
         const description = enabled ? `Disable Subscription ${name}` : `Enable Subscription ${name}`;
 
@@ -175,7 +181,7 @@ const Subscription = () => {
   ];
   const extraHeaders = (
     <Tr>
-      {Array.from({ length: 5 }, (_, index) => (
+      {Array.from({ length: 6 }, (_, index) => (
         <Th key={index} />
       ))}
       <Th isNumeric>

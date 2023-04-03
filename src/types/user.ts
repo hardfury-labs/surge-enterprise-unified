@@ -5,13 +5,13 @@ import { z } from "zod";
  */
 export const UserSchema = z
   .object({
-    passcode: z.string(),
+    passcode: z.string().trim(),
     enabled: z.boolean().optional(),
   })
   .strict();
 export type User = z.infer<typeof UserSchema>;
 
-export const UserRecordSchema = z.record(z.string({ description: "username" }), UserSchema);
+export const UserRecordSchema = z.record(z.string({ description: "username" }).trim(), UserSchema);
 export type UserRecord = z.infer<typeof UserRecordSchema>;
 
 // For form model
