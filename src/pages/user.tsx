@@ -94,8 +94,6 @@ const User = () => {
 
         const info = cellInfo.row.original;
 
-        const description = `Delete User ${username}`;
-
         return (
           <ButtonGroup>
             <WritableButton
@@ -114,9 +112,11 @@ const User = () => {
               tooltipProps={{ actionName: "Delete User" }}
               size="xs"
               colorScheme="red"
-              isLoading={isLoading(description)}
-              isDisabled={isLoading(description)}
-              onClick={() => postData("editUsers", { description, data: { users: { [username]: null } } })}
+              isLoading={isLoading(`Delete User ${username}`)}
+              isDisabled={isLoading(`Delete User ${username}`)}
+              onClick={() =>
+                postData("editUsers", { description: `Delete User ${username}`, data: { users: { [username]: null } } })
+              }
             >
               Delete
             </WritableButton>

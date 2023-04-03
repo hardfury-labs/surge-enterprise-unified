@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ButtonGroup, Card, CardBody, SimpleGrid, Text, Th, Tr, useDisclosure } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -7,7 +7,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { get } from "lodash";
 
 import { Breadcrumb, Container, WritableButton, WritableSwitch } from "@/components/chakra";
-import { FormInput, FormSelect, FormSwitch } from "@/components/form";
+import { FormInput, FormNumberInput, FormSelect, FormSwitch } from "@/components/form";
 import { CreateModal } from "@/components/modal";
 import { DataTable, TableMeta } from "@/components/table";
 import { PostDataOptions, useStore } from "@/store";
@@ -27,17 +27,32 @@ const Subscription = () => {
   const loadings = useStore((state) => state.loadings);
   const isLoading = useCallback((name: string) => get(loadings, `subscription.${descToHump(name)}`, false), [loadings]);
 
+  const defaultSubscriptionInfo = {
+    name: "",
+    url: "",
+    type: "",
+    index: Object.keys(config.subscriptions).length,
+    udpRelay: false,
+    enabled: true,
+  };
+  const [modalTitle, setModalTitle] = useState("Add New Subscription");
   const { control, handleSubmit, reset } = useForm<Required<SubscriptionInfo>>({
-    defaultValues: {
-      name: "",
-      url: "",
-      type: "",
-      udpRelay: false,
-      enabled: true,
-    },
+    defaultValues: defaultSubscriptionInfo,
     shouldFocusError: false,
   });
-  const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure({ onClose: reset });
+  const {
+    isOpen: isModalOpen,
+    onOpen: openModal,
+    onClose: closeModal,
+  } = useDisclosure({
+    onClose: () => {
+      reset({
+        ...defaultSubscriptionInfo,
+        index: Object.keys(config.subscriptions).length,
+      });
+      setModalTitle("Add New Subscription");
+    },
+  });
 
   const columnHelper = createColumnHelper<SubscriptionInfo>();
   const columns = [
@@ -139,11 +154,25 @@ const Subscription = () => {
         isNumeric: true,
         tdProps: { whiteSpace: "nowrap" },
       } as TableMeta,
-      cell: (info) => {
-        const name: string = info.row.getValue("name");
+      cell: (cellInfo) => {
+        const name: string = cellInfo.row.getValue("name");
+
+        const info = cellInfo.row.original;
 
         return (
           <ButtonGroup>
+            <WritableButton
+              tooltipProps={{ actionName: "Edit Subscription" }}
+              size="xs"
+              variant="black-ghost"
+              onClick={() => {
+                reset(info);
+                setModalTitle("Edit Subscription");
+                openModal();
+              }}
+            >
+              Edit
+            </WritableButton>
             <WritableButton
               tooltipProps={{ actionName: "Check Subscription" }}
               size="xs"
@@ -217,14 +246,14 @@ const Subscription = () => {
       <Breadcrumb title="Subscription" />
 
       <CreateModal
-        title="Add New Subscription"
+        title={modalTitle}
         isOpen={isModalOpen}
         onClose={closeModal}
-        isLoading={isLoading("Add New Subscription")}
+        isLoading={isLoading(modalTitle)}
         onSubmit={handleSubmit((info) =>
           postData("editSubscriptions", {
-            description: `Add New Subscription ${info.name}`,
-            loadingKey: "Add New Subscription",
+            description: `${modalTitle} ${info.name}`,
+            loadingKey: modalTitle,
             data: { subscriptions: { [info.name]: info } },
             successCallback: closeModal,
           }),
@@ -239,6 +268,13 @@ const Subscription = () => {
             required
             control={control}
             options={config.subscriptionTypes.map((type) => new String(type))}
+          />
+          <FormNumberInput<Required<SubscriptionInfo>>
+            label="Index"
+            id="index"
+            required
+            control={control}
+            numberInputProps={{ min: 0 }}
           />
           <FormSwitch<Required<SubscriptionInfo>> label="UDP Relay" id="udpRelay" control={control} />
           <FormSwitch<Required<SubscriptionInfo>> label="Enabled" id="enabled" control={control} />

@@ -3,10 +3,33 @@ import { defineStyle, defineStyleConfig, theme, ThemeComponents } from "@chakra-
 const components = {
   Input: {
     variants: {
-      // override the default outline variant
+      // tricky: override the default outline variant
       // https://github.com/chakra-ui/chakra-ui/discussions/2974#discussioncomment-1715417
       outline: (props) => {
         const defaultProps = theme.components.Input.variants?.outline(props);
+
+        return {
+          ...defaultProps,
+          field: {
+            ...defaultProps?.field,
+            _focusVisible: {
+              ...defaultProps?.field?._focusVisible,
+              boxShadow: "none",
+            },
+          },
+        };
+      },
+    },
+    defaultProps: {
+      focusBorderColor: "black",
+    },
+  },
+  NumberInput: {
+    variants: {
+      // tricky: override the default outline variant
+      // https://github.com/chakra-ui/chakra-ui/discussions/2974#discussioncomment-1715417
+      outline: (props) => {
+        const defaultProps = theme.components.NumberInput.variants?.outline(props);
 
         return {
           ...defaultProps,
